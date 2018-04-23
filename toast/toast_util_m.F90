@@ -18,11 +18,17 @@ module toast_util_m
     public :: getrate
     public :: areclose
 
+    !> areclose overloads
     interface areclose
         module procedure areclose_kr4
         module procedure areclose_kr8
         module procedure areclose_kr16
     end interface
+
+    !> define a string type
+    type, public :: string_t
+        character, dimension(:), allocatable :: raw
+    end type string_t
 
 contains
 

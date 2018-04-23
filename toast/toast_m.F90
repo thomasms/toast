@@ -27,6 +27,8 @@ module toast_m
         procedure :: passrate
         procedure :: failrate
         procedure :: printsummary
+        procedure :: asserttrue
+        procedure :: assertfalse
         procedure :: assertequal_ki1
         procedure :: assertequal_ki2
         procedure :: assertequal_ki4
@@ -64,10 +66,37 @@ contains
     subroutine printsummary(this)
         class(TestCase), intent(in) :: this
         write(*, "(A)") "=========================="
-        write(*, "(A, ES14.3)") "PASS RATE:", this%passrate()
-        write(*, "(A, ES14.3)") "FAIL RATE:", this%failrate()
+        write(*, "(A, I5.1, A, I5.1)") "Passed tests:", &
+              & this%passcount, " / ", this%totalcount
+        write(*, "(A, I5.1, A, I5.1)") "Failed tests:",  &
+              & this%failcount, " / ", this%totalcount
         write(*, "(A)") "=========================="
     end subroutine printsummary
+
+    !> Assert true
+    subroutine asserttrue(this, condition, message)
+        class(TestCase), intent(inout)      :: this
+        logical, intent(in)                 :: condition
+        character(*), intent(in), optional  :: message
+
+        if(condition) then
+            this%passcount = this%passcount + 1
+        else
+            this%failcount = this%failcount + 1
+        end if
+        this%totalcount = this%totalcount + 1
+
+    end subroutine asserttrue
+
+    !> Assert false
+    subroutine assertfalse(this, condition, message)
+        class(TestCase), intent(inout)      :: this
+        logical, intent(in)                 :: condition
+        character(*), intent(in), optional  :: message
+
+        call this%asserttrue(.not. condition, message)
+
+    end subroutine assertfalse
 
 !! Integer asserts
 #define MACRO_INT_TYPE ki1
