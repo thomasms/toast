@@ -67,7 +67,7 @@ contains
         this%totalcount   = 0_ki4
 
         this%lastmessageindex = 1_ki4
-        do i = lbound(this%messages, 1), ubound(this%messages, 1)
+        do concurrent (i = lbound(this%messages, 1) : this%lastmessageindex - 1_ki4)
             this%messages(i)%raw = ""
         end do
 
