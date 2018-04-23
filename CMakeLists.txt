@@ -9,6 +9,7 @@ set(PROJECT_URL "https://git.ccfe.ac.uk/thomasms/toast")
 
 # set source directories
 set (TOAST_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/toast)
+set (TOAST_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/toast/include)
 set (TOAST_EXTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR}/external)
 set (TOAST_EXAMPLES_DIR ${CMAKE_CURRENT_LIST_DIR}/examples)
 set (TOAST_BUILD_DIR ${CMAKE_BINARY_DIR})
@@ -74,7 +75,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 set(TOAST_MODULE_DIR ${TOAST_BUILD_DIR}/include)
 
 # set include and link directories
-include_directories (${TOAST_MODULE_DIR})
+include_directories (${TOAST_MODULE_DIR} ${TOAST_INCLUDE_DIR})
 link_directories (${TOAST_BUILD_DIR}/lib)
 
 # external sources
