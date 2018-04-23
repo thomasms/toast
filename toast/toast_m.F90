@@ -16,6 +16,9 @@ module toast_m
     implicit none
     private
 
+    !> Maximum number of messages
+    integer(ki4), parameter :: MAX_ASSERT_COUNT = 1000000_ki4
+
     !> The test case type used for assertions
     type, public :: TestCase
     private
@@ -23,7 +26,11 @@ module toast_m
         integer(ki4) :: failcount    = 0_ki4
         integer(ki4) :: ignoredcount = 0_ki4
         integer(ki4) :: totalcount   = 0_ki4
+
+        type(string_t), dimension(MAX_ASSERT_COUNT) :: messages
+        integer(ki4) :: lastmessageindex = 1_ki4
     contains
+        procedure :: reset
         procedure :: passrate
         procedure :: failrate
         procedure :: printsummary
@@ -43,10 +50,30 @@ module toast_m
                                     assertequal_kr4, &
                                     assertequal_kr8, &
                                     assertequal_kr16
+        procedure, private :: appendmessage
     end type TestCase
 
 contains
 
+    !> Reset all counts and messages
+    subroutine reset(this)
+        class(TestCase), intent(inout) :: this
+
+        integer(ki4) :: i
+
+        this%passcount    = 0_ki4
+        this%failcount    = 0_ki4
+        this%ignoredcount = 0_ki4
+        this%totalcount   = 0_ki4
+
+        this%lastmessageindex = 1_ki4
+        do i = lbound(this%messages, 1), ubound(this%messages, 1)
+            this%messages(i)%raw = ""
+        end do
+
+    end subroutine reset
+
+    !> Fractional pass rate
     pure function passrate(this) result(rate)
         class(TestCase), intent(in) :: this
         real(kr4) :: rate
@@ -55,6 +82,7 @@ contains
 
     end function passrate
 
+    !> Fractional fail rate
     pure function failrate(this) result(rate)
         class(TestCase), intent(in) :: this
         real(kr4) :: rate
@@ -63,8 +91,16 @@ contains
 
     end function failrate
 
+    !> Pretty print summary
     subroutine printsummary(this)
         class(TestCase), intent(in) :: this
+
+        integer(ki4) :: i
+
+        do i = lbound(this%messages, 1), this%lastmessageindex - 1_ki4
+            write(*, "(A)") "FAILED - "//this%messages(i)%raw
+        end do
+
         write(*, "(A)") "=========================="
         write(*, "(A, I5.1, A, I5.1)") "Passed tests:", &
               & this%passcount, " / ", this%totalcount
@@ -83,6 +119,9 @@ contains
             this%passcount = this%passcount + 1
         else
             this%failcount = this%failcount + 1
+            if(present(message)) then
+                call this%appendmessage(message)
+            end if
         end if
         this%totalcount = this%totalcount + 1
 
@@ -127,5 +166,14 @@ contains
 #define MACRO_REAL_TYPE kr16
 #include "assertequalrealtemplate.h"
 #undef MACRO_REAL_TYPE
+
+    subroutine appendmessage(this, message)
+        class(TestCase), intent(inout) :: this
+        character(*), intent(in)       :: message
+
+        this%messages(this%lastmessageindex)%raw = message
+        this%lastmessageindex = this%lastmessageindex + 1_ki4
+
+    end subroutine appendmessage
 
 end module toast_m

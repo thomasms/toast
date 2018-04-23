@@ -25,9 +25,12 @@ module toast_util_m
         module procedure areclose_kr16
     end interface
 
+    !> Maximum number of messages
+    integer(ki4), public, parameter :: MAX_STRING_LENGTH = 128_ki4
+
     !> define a string type
     type, public :: string_t
-        character, dimension(:), allocatable :: raw
+        character(MAX_STRING_LENGTH) :: raw
     end type string_t
 
 contains
