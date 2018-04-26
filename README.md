@@ -1,5 +1,4 @@
-# Toast
-# Testing Or ASsertion Toolkit
+## TOAST -Testing Or ASsertion Toolkit
 
 A much needed library for Fortran.
 
