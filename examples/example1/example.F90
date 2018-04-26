@@ -1,5 +1,4 @@
 program example
-    use fork_m    !< type definitions
     use toast     !< testing library
     implicit none
 

@@ -16,7 +16,10 @@ module toast_test_case_m
     implicit none
     private
 
-    !> The test case type used for assertions
+    !> The base test case type used for assertions
+    !! This can be used in two ways
+    !! 1. Use it to do simple assertions without run
+    !! 2. Extend this and implement run subroutine
     type, public :: TestCase
     private
         integer(ki4) :: passcount        = 0_ki4
@@ -32,6 +35,8 @@ module toast_test_case_m
         procedure :: passrate                   !< passcount/(passcount + failcount)
         procedure :: failrate                   !< failcount/(passcount + failcount)
         procedure :: printsummary               !< Print the counts
+        procedure :: run                        !< Runs test case by calling init and test
+        procedure :: test                       !< The test case assertions - does nothing for base type
         procedure :: asserttrue                 !< Assert condition is true
         procedure :: assertfalse                !< Assert condition is false
         procedure :: assertequal_ki1            !< Assert integers are equal (ki1)
@@ -57,10 +62,11 @@ contains
 
     !> Initialise
     subroutine init(this)
-        class(TestCase), intent(inout) :: this
+        class(TestCase), intent(inout) :: this         !< Test case type
 
         if(this%isinit .eqv. .false.) then
-            allocate(this%messages(0))
+            this%arraysize = 0_ki4
+            allocate(this%messages(this%arraysize))
             this%isinit = .true.
         endif
 
@@ -68,7 +74,7 @@ contains
 
     !> Finalize
     subroutine finalize(this)
-        type(TestCase), intent(inout) :: this
+        type(TestCase), intent(inout) :: this         !< Test case type
 
         call this%cleanup()
 
@@ -76,7 +82,7 @@ contains
 
     !> Reset all counts and messages
     subroutine reset(this)
-        class(TestCase), intent(inout) :: this
+        class(TestCase), intent(inout) :: this         !< Test case type
 
         ! reset counts
         this%passcount    = 0_ki4
@@ -86,27 +92,27 @@ contains
 
         ! reset messages by init then cleanup
         !! this maybe slow - not sure
-        call this%cleanup()
-        call this%init()
+        deallocate(this%messages)
+        this%arraysize = 0_ki4
+        allocate(this%messages(this%arraysize))
 
     end subroutine reset
 
     !> Cleanup
     subroutine cleanup(this)
-        class(TestCase), intent(inout) :: this
+        class(TestCase), intent(inout) :: this         !< Test case type
 
         if(this%isinit .eqv. .true.) then
             deallocate(this%messages)
             this%isinit = .false.
+            this%arraysize = 0_ki4
         endif
-
-        this%arraysize = 0_ki4
 
     end subroutine cleanup
 
     !> Fractional pass rate
     pure function passrate(this) result(rate)
-        class(TestCase), intent(in) :: this
+        class(TestCase), intent(in) :: this         !< Test case type
         real(kr4) :: rate
 
         rate = getrate(this%passcount, this%totalcount)
@@ -115,16 +121,33 @@ contains
 
     !> Fractional fail rate
     pure function failrate(this) result(rate)
-        class(TestCase), intent(in) :: this
+        class(TestCase), intent(in) :: this         !< Test case type
         real(kr4) :: rate
 
         rate = getrate(this%failcount, this%totalcount)
 
     end function failrate
 
+    !> Run the test by calling init then test which must be implemented
+    !! in subclasses
+    subroutine run(this)
+        class(TestCase), intent(inout) :: this     !< Test case type
+
+        call this%init()
+        call this%test()
+    end subroutine run
+
+    !> The test case assertions go here - does nothing for this base class
+    !! must be extended for use in test suite
+    subroutine test(this)
+        class(TestCase), intent(inout) :: this     !< Test case type
+
+        ! does nothing here
+    end subroutine test
+
     !> Pretty print summary
     subroutine printsummary(this)
-        class(TestCase), intent(in) :: this
+        class(TestCase), intent(in) :: this     !< Test case type
 
         integer(ki4) :: i
 
@@ -143,7 +166,7 @@ contains
 
     !> Assert true
     subroutine asserttrue(this, condition, message)
-        class(TestCase), intent(inout)      :: this
+        class(TestCase), intent(inout)      :: this         !< Test case type
         logical, intent(in)                 :: condition
         character(*), intent(in), optional  :: message
 
@@ -161,7 +184,7 @@ contains
 
     !> Assert false
     subroutine assertfalse(this, condition, message)
-        class(TestCase), intent(inout)      :: this
+        class(TestCase), intent(inout)      :: this         !< Test case type
         logical, intent(in)                 :: condition
         character(*), intent(in), optional  :: message
 
@@ -201,7 +224,7 @@ contains
 
     !> Add a message to the test case
     subroutine appendmessage(this, message)
-        class(TestCase), intent(inout) :: this
+        class(TestCase), intent(inout) :: this         !< Test case type
         character(*), intent(in)       :: message
 
         type(string_t), dimension(:), allocatable :: tmp
