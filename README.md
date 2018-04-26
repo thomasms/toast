@@ -30,6 +30,8 @@ program example
 
     type(TestCase) :: test
 
+    call test%init()
+
     call test%assertequal(3_ki4, 5_ki4)
     call test%assertequal(3_ki4, 3_ki4)
 

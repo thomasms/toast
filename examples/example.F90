@@ -5,6 +5,8 @@ program example
 
     type(TestCase) :: test
 
+    call test%init()
+
     ! integer asserts
     call test%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
     call test%assertequal(32767_ki2, 32767_ki2, message = "32767 should equal 32767")

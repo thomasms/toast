@@ -3,7 +3,8 @@ enable_language (Fortran)
 
 set (TOASTLIB_SOURCES ${FORK_SOURCE_DIR}/fork_m.F90
                       toast_util_m.F90
-                      toast_m.F90
+                      toast_test_case_m.F90
+                      toast_test_suite_m.F90
                       toast.F90)
 
 set_source_files_properties(${TOASTLIB_SOURCES} PROPERTIES COMPILE_FLAGS "${F90_FLAGS}")

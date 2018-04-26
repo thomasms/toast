@@ -9,40 +9,38 @@
 !!                                               !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!> Main module for TOAST
-module toast_m
+!> Test case module for TOAST
+module toast_test_case_m
     use fork_m
     use toast_util_m
     implicit none
     private
 
-    !> Maximum number of messages
-    integer(ki4), parameter :: MAX_ASSERT_COUNT = 1000000_ki4
-
     !> The test case type used for assertions
     type, public :: TestCase
     private
-        integer(ki4) :: passcount    = 0_ki4
-        integer(ki4) :: failcount    = 0_ki4
-        integer(ki4) :: ignoredcount = 0_ki4
-        integer(ki4) :: totalcount   = 0_ki4
-
-        type(string_t), dimension(MAX_ASSERT_COUNT) :: messages
-        integer(ki4) :: lastmessageindex = 1_ki4
+        integer(ki4) :: passcount        = 0_ki4
+        integer(ki4) :: failcount        = 0_ki4
+        integer(ki4) :: ignoredcount     = 0_ki4
+        integer(ki4) :: totalcount       = 0_ki4
+        integer(ki4) :: arraysize        = 0_ki4
+        logical      :: isinit           = .false.
+        type(string_t), dimension(:), allocatable :: messages
     contains
-        procedure :: reset
-        procedure :: passrate
-        procedure :: failrate
-        procedure :: printsummary
-        procedure :: asserttrue
-        procedure :: assertfalse
-        procedure :: assertequal_ki1
-        procedure :: assertequal_ki2
-        procedure :: assertequal_ki4
-        procedure :: assertequal_ki8
-        procedure :: assertequal_kr4
-        procedure :: assertequal_kr8
-        procedure :: assertequal_kr16
+        procedure :: init                       !< Initialise
+        procedure :: reset                      !< Reset test case and counts
+        procedure :: passrate                   !< passcount/(passcount + failcount)
+        procedure :: failrate                   !< failcount/(passcount + failcount)
+        procedure :: printsummary               !< Print the counts
+        procedure :: asserttrue                 !< Assert condition is true
+        procedure :: assertfalse                !< Assert condition is false
+        procedure :: assertequal_ki1            !< Assert integers are equal (ki1)
+        procedure :: assertequal_ki2            !< Assert integers are equal (ki2)
+        procedure :: assertequal_ki4            !< Assert integers are equal (ki4)
+        procedure :: assertequal_ki8            !< Assert integers are equal (ki8)
+        procedure :: assertequal_kr4            !< Assert reals are equal with tolerance (kr4)
+        procedure :: assertequal_kr8            !< Assert reals are equal with tolerance (kr8)
+        procedure :: assertequal_kr16           !< Assert reals are equal with tolerance (kr16)
           generic :: assertequal => assertequal_ki1, &
                                     assertequal_ki2, &
                                     assertequal_ki4, &
@@ -51,27 +49,60 @@ module toast_m
                                     assertequal_kr8, &
                                     assertequal_kr16
         procedure, private :: appendmessage
+        procedure, private :: cleanup
+                     final :: finalize
     end type TestCase
 
 contains
+
+    !> Initialise
+    subroutine init(this)
+        class(TestCase), intent(inout) :: this
+
+        if(this%isinit .eqv. .false.) then
+            allocate(this%messages(0))
+            this%isinit = .true.
+        endif
+
+    end subroutine init
+
+    !> Finalize
+    subroutine finalize(this)
+        type(TestCase), intent(inout) :: this
+
+        call this%cleanup()
+
+    end subroutine finalize
 
     !> Reset all counts and messages
     subroutine reset(this)
         class(TestCase), intent(inout) :: this
 
-        integer(ki4) :: i
-
+        ! reset counts
         this%passcount    = 0_ki4
         this%failcount    = 0_ki4
         this%ignoredcount = 0_ki4
         this%totalcount   = 0_ki4
 
-        this%lastmessageindex = 1_ki4
-        do concurrent (i = lbound(this%messages, 1) : this%lastmessageindex - 1_ki4)
-            this%messages(i)%raw = ""
-        end do
+        ! reset messages by init then cleanup
+        !! this maybe slow - not sure
+        call this%cleanup()
+        call this%init()
 
     end subroutine reset
+
+    !> Cleanup
+    subroutine cleanup(this)
+        class(TestCase), intent(inout) :: this
+
+        if(this%isinit .eqv. .true.) then
+            deallocate(this%messages)
+            this%isinit = .false.
+        endif
+
+        this%arraysize = 0_ki4
+
+    end subroutine cleanup
 
     !> Fractional pass rate
     pure function passrate(this) result(rate)
@@ -97,16 +128,17 @@ contains
 
         integer(ki4) :: i
 
-        do i = lbound(this%messages, 1), this%lastmessageindex - 1_ki4
-            write(*, "(A)") "FAILED - "//this%messages(i)%raw
+        write(*, "(A)") "==============================="
+        write(*, "(A, I5.1, A, I5.1)") "Passed assertions:", &
+              & this%passcount, " / ", this%totalcount
+        write(*, "(A, I5.1, A, I5.1)") "Failed assertions:",  &
+              & this%failcount, " / ", this%totalcount
+        write(*, "(A)") "==============================="
+
+        do i = 1_ki4, this%arraysize
+            write(*, "(A)") "FAILED - "//trim(this%messages(i)%raw)
         end do
 
-        write(*, "(A)") "=========================="
-        write(*, "(A, I5.1, A, I5.1)") "Passed tests:", &
-              & this%passcount, " / ", this%totalcount
-        write(*, "(A, I5.1, A, I5.1)") "Failed tests:",  &
-              & this%failcount, " / ", this%totalcount
-        write(*, "(A)") "=========================="
     end subroutine printsummary
 
     !> Assert true
@@ -167,13 +199,24 @@ contains
 #include "assertequalrealtemplate.h"
 #undef MACRO_REAL_TYPE
 
+    !> Add a message to the test case
     subroutine appendmessage(this, message)
         class(TestCase), intent(inout) :: this
         character(*), intent(in)       :: message
 
-        this%messages(this%lastmessageindex)%raw = message
-        this%lastmessageindex = this%lastmessageindex + 1_ki4
+        type(string_t), dimension(:), allocatable :: tmp
+        integer(ki4) :: prevsize
+
+        if(this%isinit .eqv. .true.) then
+            prevsize = this%arraysize
+            allocate(tmp(prevsize + 1_ki4))
+            tmp(1_ki4:prevsize) = this%messages
+            !deallocate(this%testcases)
+            call move_alloc(tmp, this%messages)
+            this%arraysize = this%arraysize + 1_ki4
+            this%messages(this%arraysize)%raw = trim(message)
+        endif
 
     end subroutine appendmessage
 
-end module toast_m
+end module toast_test_case_m
