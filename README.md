@@ -61,7 +61,7 @@ module exampletestcase_m
     type, extends(TestCase), public :: ExampleTestCase
     contains
         procedure :: test
-    end type exampletestcase
+    end type ExampleTestCase
 
 contains
 
@@ -112,6 +112,11 @@ program example
     use toast     !< testing library
     implicit none
     
+    type(TestCase) :: test
+
+    ! Note the need for init here
+    call test%init()
+g
     !> Will not compile since kr16 and kr4 are different types
     call test%assertequal(3.0_kr16, 3.0_kr4)
     call test%printsummary()
