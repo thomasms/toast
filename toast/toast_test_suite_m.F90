@@ -20,18 +20,23 @@ module toast_test_suite_m
     !> Test suite - a collection of test cases
     type, public :: TestSuite
     private
-        type(TestCase), dimension(:), allocatable :: testcases
-        logical                                   :: isinit = .false.
-        integer(ki4)                              :: arraysize = 0_ki4
+        type(TestCasePoly), dimension(:), allocatable  :: testcases
+        logical                                        :: isinit = .false.
+        integer(ki4)                                   :: arraysize = 0_ki4
     contains
         procedure :: init                       !< Initialise
         procedure :: size                       !< Get the size
         procedure :: append                     !< Append a test case
-        !procedure :: runall                     !< Run all test cases
+        procedure :: runall                     !< Run all test cases
             final :: finalize
         procedure, private :: cleanup
     end type TestSuite
-    
+
+    !> Create a constructor for the suite
+    interface TestSuite
+        procedure constructor       !< construct and initialize the suite
+    end interface
+
 contains
 
     !> Initialise
@@ -72,25 +77,49 @@ contains
 
     end function size
 
+    !> Run all the test cases
+    subroutine runall(this)
+        class(TestSuite), intent(inout) :: this
+
+        integer(ki4) :: i
+
+        do i = 1, this%size()
+            call this%testcases(i)%raw%run()
+            call this%testcases(i)%raw%printsummary()
+        end do
+
+    end subroutine runall
+
     !> Append - a bit slow for large appends
-    !! ToDo: improve performance
     subroutine append(this, test)
         class(TestSuite), intent(inout) :: this
-        type(TestCase), intent(in)      :: test
+        class(TestCase), intent(in)     :: test
 
-        type(TestCase), dimension(:), allocatable :: tmp
+        type(TestCasePoly), dimension(:), allocatable :: tmp
+        type(TestCasePoly) :: testpoly
         integer(ki4) :: prevsize
 
         if(this%isinit .eqv. .true.) then
             prevsize = this%size()
             allocate(tmp(prevsize + 1_ki4))
             tmp(1_ki4:prevsize) = this%testcases
-            !deallocate(this%testcases)
             call move_alloc(tmp, this%testcases)
             this%arraysize = this%arraysize + 1_ki4
-            this%testcases(this%arraysize) = test
+
+            ! Since we must wrap the test case in the polymorphic
+            ! type TestCasePoly we need to allocate the raw here
+            ! TestCasePoly finalize will cleanup for us
+            allocate(testpoly%raw, source = test)
+            this%testcases(this%arraysize) = testpoly
         endif
 
     end subroutine append
+
+    !> constructor
+    function constructor()
+        type(TestSuite) :: constructor      !< test suite type to construct
+
+        call constructor%init()
+    end function constructor
 
 end module toast_test_suite_m

@@ -29,6 +29,7 @@ module toast_test_case_m
         integer(ki4) :: arraysize        = 0_ki4
         logical      :: isinit           = .false.
         type(string_t), dimension(:), allocatable :: messages
+        character(40), public :: name = "Test Case"
     contains
         procedure :: init                       !< Initialise
         procedure :: reset                      !< Reset test case and counts
@@ -58,6 +59,14 @@ module toast_test_case_m
                      final :: finalize
     end type TestCase
 
+    !> Polymorphic type wrapping testcase, must be allocatable
+    type, public :: TestCasePoly
+        class(TestCase), allocatable :: raw
+    contains
+        procedure, private :: cleanup => poly_cleanup
+                     final :: poly_finalize
+    end type TestCasePoly
+
 contains
 
     !> Initialise
@@ -79,6 +88,14 @@ contains
         call this%cleanup()
 
     end subroutine finalize
+
+    !> Test case Finalize
+    subroutine poly_finalize(this)
+        type(TestCasePoly), intent(inout) :: this         !< Test case type
+
+        call this%cleanup()
+
+    end subroutine poly_finalize
 
     !> Reset all counts and messages
     subroutine reset(this)
@@ -110,6 +127,16 @@ contains
 
     end subroutine cleanup
 
+    !> Cleanup
+    subroutine poly_cleanup(this)
+        class(TestCasePoly), intent(inout) :: this         !< Test case type
+
+        if(allocated(this%raw)) then
+            deallocate(this%raw)
+        endif
+
+    end subroutine poly_cleanup
+
     !> Fractional pass rate
     pure function passrate(this) result(rate)
         class(TestCase), intent(in) :: this         !< Test case type
@@ -128,7 +155,7 @@ contains
 
     end function failrate
 
-    !> Run the test by calling init then test which must be implemented
+    !> Run the test by calling init and then test which must be implemented
     !! in subclasses
     subroutine run(this)
         class(TestCase), intent(inout) :: this     !< Test case type
@@ -151,6 +178,8 @@ contains
 
         integer(ki4) :: i
 
+        write(*, "(A)") "*******************************"
+        write(*, "(A42)") " "//this%name//" "
         write(*, "(A)") "==============================="
         write(*, "(A, I5.1, A, I5.1)") "Passed assertions:", &
               & this%passcount, " / ", this%totalcount
@@ -159,7 +188,7 @@ contains
         write(*, "(A)") "==============================="
 
         do i = 1_ki4, this%arraysize
-            write(*, "(A)") "FAILED - "//trim(this%messages(i)%raw)
+            write(*, "(A)") " !!! FAILED - "//trim(this%messages(i)%raw)
         end do
 
     end subroutine printsummary
@@ -234,7 +263,6 @@ contains
             prevsize = this%arraysize
             allocate(tmp(prevsize + 1_ki4))
             tmp(1_ki4:prevsize) = this%messages
-            !deallocate(this%testcases)
             call move_alloc(tmp, this%messages)
             this%arraysize = this%arraysize + 1_ki4
             this%messages(this%arraysize)%raw = trim(message)
