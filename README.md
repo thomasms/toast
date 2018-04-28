@@ -12,11 +12,12 @@ Hence the need for Toast!
 Still very early, API likely to change.
 - Testing needs testing
 - Setup CI
-- Support for other types
+- Support for other types - character arrays need to be implemented
 - Support for derived data types
 - Support for arrays
 - Support for mpi
 - Ensure threadsafety
+- JSON output
 
 
 Toast can be used in 2 main ways:
@@ -53,27 +54,37 @@ A simple example of type 2 usage is given in the example below:
 
 ```fortran
 !> Define tests here
-module exampletestcase_m
+module exampletestcases
     use toast     !< testing library
     implicit none
     private
 
+    !> We define the test case here
     type, extends(TestCase), public :: PassingTestCaseExample
     contains
-        procedure :: test => ptest
+        procedure :: test => PassingTestCaseExampleProc
     end type PassingTestCaseExample
 
-    type, extends(TestCase), public :: FailingTestCaseExample
-    contains
-        procedure :: test => ftest
-    end type FailingTestCaseExample
+!> Alternatively, we can define a test case using the include macro
+#define MACRO_TESTCASE_NAME FailingTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC FailingTestCaseExampleProc
+#include "definetestcase.h"
+
+#define MACRO_TESTCASE_NAME PassAgainTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC PassAgainTestCaseExampleProc
+#include "definetestcase.h"
+
+#define MACRO_TESTCASE_NAME FailAgainTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC FailAgainTestCaseExampleProc
+#include "definetestcase.h"
 
 contains
 
-    !passing test example
-    subroutine ptest(this)
+    !> passing test example
+    subroutine PassingTestCaseExampleProc(this)
         class(PassingTestCaseExample), intent(inout) :: this
 
+        !> Name is optional but helps with output
         this%name = "Passing test case example"
 
         ! integer asserts
@@ -85,12 +96,13 @@ contains
         call this%asserttrue(2_ki4*3_ki4 == 6_ki4, "2*3 == 6 should be true.")
         call this%assertfalse(.false., "False should be false.")
 
-    end subroutine ptest
+    end subroutine
 
-    ! failing test example
-    subroutine ftest(this)
+    !> failing test example
+    subroutine FailingTestCaseExampleProc(this)
         class(FailingTestCaseExample), intent(inout) :: this
 
+        !> Name is optional but helps with output
         this%name = "Failing test case example"
 
         ! integer asserts
@@ -102,24 +114,46 @@ contains
         call this%asserttrue(2_ki4*3_ki4 == 7_ki4, "2*3 == 6 should be true.")
         call this%assertfalse(.true., "False should be false.")
 
-    end subroutine ftest
-end module exampletestcase_m
+    end subroutine
+
+    !> passing test example
+    subroutine PassAgainTestCaseExampleProc(this)
+        class(PassAgainTestCaseExample), intent(inout) :: this
+
+        !> Name is optional but helps with output
+        this%name = "Passing test case, another example"
+
+        call this%asserttrue(.not. .false., "Not false should be true.")
+
+    end subroutine
+
+    !> failing test example
+    subroutine FailAgainTestCaseExampleProc(this)
+        class(FailAgainTestCaseExample), intent(inout) :: this
+
+        !> Name is optional but helps with output
+        this%name = "Failing test case, another example"
+
+        call this%asserttrue(.false., "false cannot be true.")
+
+    end subroutine
+
+end module exampletestcases
 
 !> Main test program
 program example
     use toast
-    use exampletestcase_m
+    use exampletestcases
     implicit none
 
     type(TestSuite) :: suite
-
     suite = TestSuite()
 
+    ! add the tests here
     call suite%append(PassingTestCaseExample())
     call suite%append(FailingTestCaseExample())
-    call suite%append(FailingTestCaseExample())
-    call suite%append(PassingTestCaseExample())
-    call suite%append(PassingTestCaseExample())
+    call suite%append(PassAgainTestCaseExample())
+    call suite%append(FailAgainTestCaseExample())
 
     call suite%runall()
 

@@ -1,28 +1,39 @@
 !> Define tests here
-module exampletestcase_m
+module exampletestcases
     use toast     !< testing library
     implicit none
     private
 
+    !> We define the test case here
     type, extends(TestCase), public :: PassingTestCaseExample
     contains
-        procedure :: test => ptest
+        procedure :: test => PassingTestCaseExampleProc
     end type PassingTestCaseExample
 
-    type, extends(TestCase), public :: FailingTestCaseExample
-    contains
-        procedure :: test => ftest
-    end type FailingTestCaseExample
+!> Alternatively, we can define a test case using the include macro
+!! Fortran PP doesn't support multiline definitions
+#define MACRO_TESTCASE_NAME FailingTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC FailingTestCaseExampleProc
+#include "definetestcase.h"
+
+#define MACRO_TESTCASE_NAME PassAgainTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC PassAgainTestCaseExampleProc
+#include "definetestcase.h"
+
+#define MACRO_TESTCASE_NAME FailAgainTestCaseExample
+#define MACRO_TESTCASE_NAME_PROC FailAgainTestCaseExampleProc
+#include "definetestcase.h"
 
 contains
 
-    !passing test example
-    subroutine ptest(this)
+    !> passing test example
+    subroutine PassingTestCaseExampleProc(this)
         class(PassingTestCaseExample), intent(inout) :: this
 
+        ! Name is optional but helps with output
         this%name = "Passing test case example"
 
-        ! integer asserts
+        ! asserts
         call this%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
         call this%assertequal(32767_ki2, 32767_ki2, message = "32767 should equal 32767")
         call this%assertequal(3.0_kr8, 3.0_kr8, message = "3 should equal 3")
@@ -31,15 +42,16 @@ contains
         call this%asserttrue(2_ki4*3_ki4 == 6_ki4, "2*3 == 6 should be true.")
         call this%assertfalse(.false., "False should be false.")
 
-    end subroutine ptest
+    end subroutine
 
-    ! failing test example
-    subroutine ftest(this)
+    !> failing test example
+    subroutine FailingTestCaseExampleProc(this)
         class(FailingTestCaseExample), intent(inout) :: this
 
+        ! Name is optional but helps with output
         this%name = "Failing test case example"
 
-        ! integer asserts
+        ! asserts
         call this%assertequal(127_ki1, 12_ki1, message = "127 should equal 127")
         call this%assertequal(32767_ki2, 327_ki2, message = "32767 should equal 32767")
         call this%assertequal(3.0_kr8, 3.4_kr8, message = "3 should equal 3")
@@ -47,26 +59,46 @@ contains
                              & message = "3 should equal 3.1 with higher tolerance")
         call this%asserttrue(2_ki4*3_ki4 == 7_ki4, "2*3 == 6 should be true.")
         call this%assertfalse(.true., "False should be false.")
+    end subroutine
 
-    end subroutine ftest
-end module exampletestcase_m
+    !> passing test example
+    subroutine PassAgainTestCaseExampleProc(this)
+        class(PassAgainTestCaseExample), intent(inout) :: this
+
+        ! Name is optional but helps with output
+        this%name = "Passing test case, another example"
+
+        call this%asserttrue(.not. .false., "Not false should be true.")
+    end subroutine
+
+    !> failing test example
+    subroutine FailAgainTestCaseExampleProc(this)
+        class(FailAgainTestCaseExample), intent(inout) :: this
+
+        ! Name is optional but helps with output
+        this%name = "Failing test case, another example"
+
+        call this%asserttrue(.false., "false cannot be true.")
+    end subroutine
+
+end module exampletestcases
 
 !> Main test program
 program example
     use toast
-    use exampletestcase_m
+    use exampletestcases
     implicit none
 
     type(TestSuite) :: suite
-
     suite = TestSuite()
 
+    ! add the test cases here
     call suite%append(PassingTestCaseExample())
     call suite%append(FailingTestCaseExample())
-    call suite%append(FailingTestCaseExample())
-    call suite%append(PassingTestCaseExample())
-    call suite%append(PassingTestCaseExample())
+    call suite%append(PassAgainTestCaseExample())
+    call suite%append(FailAgainTestCaseExample())
 
+    ! Run them and print output
     call suite%runall()
 
 end program example
