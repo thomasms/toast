@@ -10,18 +10,21 @@ Yes I know that pFUnit and FRUIT exist however:
 
 Hence the need for Toast!
 
-### ToDo:
+### Status:
 Still very early, API likely to change.
-- Testing needs testing
-- Setup CI
-- Support for other types - character arrays need to be implemented
-- Support for derived data types
-- Support for arrays
-- Support for mpi
-- Ensure threadsafety
-- JSON output
-- File comparision
-- Regression testing framework
+- [x] Basic Test type
+- [x] Support Int, Real and logical assert
+- [x] Tolerances (absolute + relative) for real
+- [x] Setup CI
+- [ ] Testing needs testing
+- [ ] Support for other types - character arrays need to be implemented
+- [ ] Support for derived data types
+- [ ] Support for arrays
+- [ ] Support for mpi
+- [ ] Ensure threadsafety
+- [ ] JSON output
+- [ ] File comparision
+- [ ]Regression testing framework
 
 
 Toast can be used in 2 main ways:
