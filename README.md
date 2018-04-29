@@ -1,5 +1,7 @@
 ## TOAST -Testing Or ASsertion Toolkit
 
+[![Build Status](https://travis-ci.org/thomasms/toast.svg?branch=master)](https://travis-ci.org/thomasms/toast)
+
 A much needed library for Fortran.
 
 Yes I know that pFUnit and FRUIT exist however:
