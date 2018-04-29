@@ -12,7 +12,6 @@
 !> Full TOAST module
 module toast
     use fork_m
-    use toast_util_m
     use toast_test_case_m
     use toast_test_suite_m
 

@@ -22,19 +22,17 @@ module toast_test_case_m
     !! 2. Extend this and implement run subroutine
     type, public :: TestCase
     private
-        integer(ki4) :: passcount        = 0_ki4
-        integer(ki4) :: failcount        = 0_ki4
-        integer(ki4) :: ignoredcount     = 0_ki4
-        integer(ki4) :: totalcount       = 0_ki4
-        integer(ki4) :: arraysize        = 0_ki4
-        logical      :: isinit           = .false.
+        logical      :: isinit    = .false.
+        integer(ki4) :: arraysize = 0_ki4
+        integer(ki4) :: pcount    = 0_ki4
+        integer(ki4) :: fcount    = 0_ki4
         type(string_t), dimension(:), allocatable :: messages
-        character(40), public :: name = "Test Case"
+        character(25), public :: name = "Test Case"
     contains
         procedure :: init                       !< Initialise
         procedure :: reset                      !< Reset test case and counts
-        procedure :: passrate                   !< passcount/(passcount + failcount)
-        procedure :: failrate                   !< failcount/(passcount + failcount)
+        procedure :: passcount                  !< Pass count
+        procedure :: failcount                  !< Fail count
         procedure :: printsummary               !< Print the counts
         procedure :: run                        !< Runs test case by calling init and test
         procedure :: test                       !< The test case assertions - does nothing for base type
@@ -58,6 +56,11 @@ module toast_test_case_m
         procedure, private :: cleanup
                      final :: finalize
     end type TestCase
+
+    !> Create a constructor for the test case
+    interface TestCase
+        procedure constructor       !< construct and initialize the suite
+    end interface
 
     !> Polymorphic type wrapping testcase, must be allocatable
     type, public :: TestCasePoly
@@ -102,10 +105,8 @@ contains
         class(TestCase), intent(inout) :: this         !< Test case type
 
         ! reset counts
-        this%passcount    = 0_ki4
-        this%failcount    = 0_ki4
-        this%ignoredcount = 0_ki4
-        this%totalcount   = 0_ki4
+        this%pcount = 0_ki4
+        this%fcount = 0_ki4
 
         ! reset messages by init then cleanup
         !! this maybe slow - not sure
@@ -137,32 +138,19 @@ contains
 
     end subroutine poly_cleanup
 
-    !> Fractional pass rate
-    pure function passrate(this) result(rate)
-        class(TestCase), intent(in) :: this         !< Test case type
-        real(kr4) :: rate
-
-        rate = getrate(this%passcount, this%totalcount)
-
-    end function passrate
-
-    !> Fractional fail rate
-    pure function failrate(this) result(rate)
-        class(TestCase), intent(in) :: this         !< Test case type
-        real(kr4) :: rate
-
-        rate = getrate(this%failcount, this%totalcount)
-
-    end function failrate
-
     !> Run the test by calling init and then test which must be implemented
     !! in subclasses
-    subroutine run(this)
+    !! returns true if no failures (failed asserts) occurred
+    logical function run(this)
         class(TestCase), intent(inout) :: this     !< Test case type
 
+        run = .false.
         call this%init()
         call this%test()
-    end subroutine run
+        if(this%fcount == 0_ki4)then
+            run = .true.
+        end if
+    end function run
 
     !> The test case assertions go here - does nothing for this base class
     !! must be extended for use in test suite
@@ -172,6 +160,20 @@ contains
         ! does nothing here
     end subroutine test
 
+    !> Return the pass count
+    integer(ki4) function passcount(this)
+        class(TestCase), intent(in) :: this     !< Test case type
+
+        passcount = this%pcount
+    end function passcount
+
+    !> Return the fail count
+    integer(ki4) function failcount(this)
+        class(TestCase), intent(in) :: this     !< Test case type
+
+        failcount = this%fcount
+    end function failcount
+
     !> Pretty print summary
     subroutine printsummary(this)
         class(TestCase), intent(in) :: this     !< Test case type
@@ -180,12 +182,12 @@ contains
 
         write(*, "(A)") ""
         write(*, "(A)") "==============================="
-        write(*, "(A42)") " "//this%name//" "
+        write(*, "(A27)") " "//this%name//" "
         write(*, "(A)") "==============================="
         write(*, "(A, I5.1, A, I5.1)") "Passed assertions:", &
-              & this%passcount, " / ", this%totalcount
+              & this%pcount, " / ", this%pcount + this%fcount
         write(*, "(A, I5.1, A, I5.1)") "Failed assertions:",  &
-              & this%failcount, " / ", this%totalcount
+              & this%fcount, " / ", this%pcount + this%fcount
         write(*, "(A)") "==============================="
 
         do i = 1_ki4, this%arraysize
@@ -201,14 +203,13 @@ contains
         character(*), intent(in), optional  :: message
 
         if(condition) then
-            this%passcount = this%passcount + 1
+            this%pcount = this%pcount + 1_ki4
         else
-            this%failcount = this%failcount + 1
+            this%fcount = this%fcount + 1_ki4
             if(present(message)) then
                 call this%appendmessage(message)
             end if
         end if
-        this%totalcount = this%totalcount + 1
 
     end subroutine asserttrue
 
@@ -270,5 +271,12 @@ contains
         endif
 
     end subroutine appendmessage
+
+    !> constructor
+    function constructor()
+        type(TestCase) :: constructor      !< test case type to construct
+
+        call constructor%init()
+    end function constructor
 
 end module toast_test_case_m

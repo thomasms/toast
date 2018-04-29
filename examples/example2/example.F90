@@ -69,6 +69,7 @@ contains
         this%name = "Passing test case, another example"
 
         call this%asserttrue(.not. .false., "Not false should be true.")
+        call this%asserttrue(.true., "True should be true.")
     end subroutine
 
     !> failing test example
@@ -100,5 +101,7 @@ program example
 
     ! Run them and print output
     call suite%runall()
+
+    call suite%printsummary()
 
 end program example

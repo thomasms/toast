@@ -18,6 +18,8 @@ Still very early, API likely to change.
 - Support for mpi
 - Ensure threadsafety
 - JSON output
+- File comparision
+- Regression testing framework
 
 
 Toast can be used in 2 main ways:

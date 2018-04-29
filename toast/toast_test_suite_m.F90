@@ -23,11 +23,14 @@ module toast_test_suite_m
         type(TestCasePoly), dimension(:), allocatable  :: testcases
         logical                                        :: isinit = .false.
         integer(ki4)                                   :: arraysize = 0_ki4
+        integer(ki4)                                   :: pcount    = 0_ki4
+        integer(ki4)                                   :: fcount    = 0_ki4
     contains
         procedure :: init                       !< Initialise
         procedure :: size                       !< Get the size
         procedure :: append                     !< Append a test case
         procedure :: runall                     !< Run all test cases
+        procedure :: printsummary
             final :: finalize
         procedure, private :: cleanup
     end type TestSuite
@@ -84,11 +87,41 @@ contains
         integer(ki4) :: i
 
         do i = 1, this%size()
-            call this%testcases(i)%raw%run()
-            call this%testcases(i)%raw%printsummary()
+            if(this%testcases(i)%raw%run())then
+                this%pcount = this%pcount + 1_ki4
+            else
+                this%fcount = this%fcount + 1_ki4
+            end if
         end do
 
     end subroutine runall
+
+    !> Pretty print summary
+    subroutine printsummary(this)
+        class(TestSuite), intent(in) :: this     !< Test case type
+
+        integer(ki4) :: i, passerts, fasserts
+
+        passerts = 0_ki4
+        fasserts = 0_ki4
+
+        do i = 1_ki4, this%arraysize
+            passerts = passerts + this%testcases(i)%raw%passcount()
+            fasserts = fasserts + this%testcases(i)%raw%failcount()
+        end do
+
+        !! print results
+        write(*, "(A)") " TOAST RESULTS "
+        write(*, "(A)") "=================================================================="
+        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") " Passed test cases: ", &
+              & this%pcount, " / ", this%pcount + this%fcount, " - (", passerts, &
+              & " / ", passerts + fasserts, ") asserts"
+        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") " Failed test cases: ", &
+              & this%fcount, " / ", this%pcount + this%fcount, " - (", fasserts, &
+              & " / ", passerts + fasserts, ") asserts"
+        write(*, "(A)") "=================================================================="
+
+    end subroutine printsummary
 
     !> Append - a bit slow for large appends
     subroutine append(this, test)

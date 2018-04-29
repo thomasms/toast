@@ -15,8 +15,8 @@ module toast_util_m
     implicit none
     private
 
-    public :: getrate
-    public :: areclose
+    public :: getrate       !< get the fractional value of top/bottom
+    public :: areclose      !< check whether two real values are within tolerances
 
     !> areclose overloads
     interface areclose
@@ -35,6 +35,7 @@ module toast_util_m
 
 contains
 
+    !> get the fractional value of top/bottom
     pure function getrate(top, bottom) result(rate)
         integer(ki4), intent(in)    :: top
         integer(ki4), intent(in)    :: bottom

@@ -3,8 +3,7 @@ program example
     implicit none
 
     type(TestCase) :: test
-
-    call test%init()
+    test = TestCase()
 
     ! integer asserts
     call test%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
