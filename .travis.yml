@@ -52,6 +52,12 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7 && FC=gfortran-7"
 
+env:
+  global:
+    - LD_LIBRARY_PATH=/usr/local/lib
+    - LD_RUN_PATH=/usr/local/lib
+    - PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
 before_script:
     - eval "${MATRIX_EVAL}"
 
