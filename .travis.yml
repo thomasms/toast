@@ -1,0 +1,15 @@
+language: c
+sudo: required
+before_install:
+  - sudo apt-get install gfortran
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./bin/toastexample1
+  - ./bin/toastexample2
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
