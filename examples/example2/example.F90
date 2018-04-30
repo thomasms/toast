@@ -61,6 +61,10 @@ contains
 
         call this%asserttrue(.not. .false., "Not false should be true.")
         call this%asserttrue(.true., "True should be true.")
+        ! integer array 1d asserts
+        call this%assertequal([32767_ki2, 2_ki2], &
+                            & [32767_ki2, 2_ki2], &
+                            & message = "arrays should match")
     end subroutine
 
     !> failing test example
@@ -68,6 +72,9 @@ contains
         class(FailAgainTestCaseExample), intent(inout) :: this
 
         call this%asserttrue(.false., "false cannot be true.")
+        call this%assertequal([32767_ki2, 2_ki2, 34_ki2], &
+                            & [32767_ki2, 2_ki2, 324_ki2], &
+                            & message = "arrays should not match")
     end subroutine
 
 end module exampletestcases

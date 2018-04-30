@@ -112,14 +112,12 @@ contains
 
         !! print results
         write(*, "(A)") " TOAST RESULTS "
-        write(*, "(A)") "=================================================================="
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") " Passed test cases: ", &
-              & this%pcount, " / ", this%pcount + this%fcount, " - (", passerts, &
-              & " / ", passerts + fasserts, ") asserts"
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") " Failed test cases: ", &
-              & this%fcount, " / ", this%pcount + this%fcount, " - (", fasserts, &
-              & " / ", passerts + fasserts, ") asserts"
-        write(*, "(A)") "=================================================================="
+        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Passed test cases: ", &
+              & this%pcount, " / ", this%pcount + this%fcount, "] (", passerts, &
+              & " / ", passerts + fasserts, " asserts)"
+        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Failed test cases: ", &
+              & this%fcount, " / ", this%pcount + this%fcount, "] (", fasserts, &
+              & " / ", passerts + fasserts, " asserts)"
 
     end subroutine printsummary
 

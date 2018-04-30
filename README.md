@@ -91,9 +91,6 @@ contains
     subroutine PassingTestCaseExampleProc(this)
         class(PassingTestCaseExample), intent(inout) :: this
 
-        !> Name is optional but helps with output
-        this%name = "Passing test case example"
-
         ! integer asserts
         call this%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
         call this%assertequal(32767_ki2, 32767_ki2, message = "32767 should equal 32767")
@@ -108,9 +105,6 @@ contains
     !> failing test example
     subroutine FailingTestCaseExampleProc(this)
         class(FailingTestCaseExample), intent(inout) :: this
-
-        !> Name is optional but helps with output
-        this%name = "Failing test case example"
 
         ! integer asserts
         call this%assertequal(127_ki1, 12_ki1, message = "127 should equal 127")
@@ -127,9 +121,6 @@ contains
     subroutine PassAgainTestCaseExampleProc(this)
         class(PassAgainTestCaseExample), intent(inout) :: this
 
-        !> Name is optional but helps with output
-        this%name = "Passing test case, another example"
-
         call this%asserttrue(.not. .false., "Not false should be true.")
 
     end subroutine
@@ -137,9 +128,6 @@ contains
     !> failing test example
     subroutine FailAgainTestCaseExampleProc(this)
         class(FailAgainTestCaseExample), intent(inout) :: this
-
-        !> Name is optional but helps with output
-        this%name = "Failing test case, another example"
 
         call this%asserttrue(.false., "false cannot be true.")
 
@@ -157,12 +145,14 @@ program example
     suite = TestSuite()
 
     ! add the tests here
-    call suite%append(PassingTestCaseExample())
-    call suite%append(FailingTestCaseExample())
-    call suite%append(PassAgainTestCaseExample())
-    call suite%append(FailAgainTestCaseExample())
+    call suite%append(PassingTestCaseExample(name="passing_case1"))
+    call suite%append(FailingTestCaseExample(name="failing_case1"))
+    call suite%append(PassAgainTestCaseExample(name="passing_case2"))
+    call suite%append(FailAgainTestCaseExample(name="failing_case2"))
+    call suite%append(PassingTestCaseExample(name="passing_case1_again"))
 
     call suite%runall()
+    call suite%printsummary()
 
 end program example
 ```

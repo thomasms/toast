@@ -2,14 +2,22 @@ program example
     use toast     !< testing library
     implicit none
 
+    integer(ki4) :: i
     type(TestCase) :: test
-    test = TestCase()
+
+    call test%init(name="example1")
 
     ! integer asserts
-    call test%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
+    do i=1, 10
+        call test%assertequal(127_ki1, 127_ki1, message = "127 should equal 127")
+    end do
     call test%assertequal(32767_ki2, 32767_ki2, message = "32767 should equal 32767")
     call test%assertequal(3_ki4, 5_ki4, message = "3 does not equal 5")
     call test%assertequal(3_ki4, 3_ki4, message = "3 should equal 3")
+
+    ! integer array 1d asserts
+    call test%assertequal([32767_ki2, 2_ki2], [32767_ki2, 2_ki2], message = "arrays should match")
+    call test%assertequal([32767_ki2, 2_ki2, 1_ki2], [32767_ki2, 2_ki2, 2_ki2], message = "arrays should not match")
 
     ! real asserts
     call test%assertequal(3.0_kr8, 3.0_kr8, message = "3 should equal 3")
