@@ -1,0 +1,2 @@
+add_subdirectory(test_testcase_init)
+add_subdirectory(test_testcase_reset)

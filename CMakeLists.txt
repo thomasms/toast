@@ -12,6 +12,7 @@ set (TOAST_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/toast)
 set (TOAST_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/toast/include)
 set (TOAST_EXTERNAL_DIR ${CMAKE_CURRENT_LIST_DIR}/external)
 set (TOAST_EXAMPLES_DIR ${CMAKE_CURRENT_LIST_DIR}/examples)
+set (TOAST_TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/tests)
 set (TOAST_BUILD_DIR ${CMAKE_BINARY_DIR})
 
 # library names
@@ -84,5 +85,6 @@ set (FORK_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/fork)
 # sources
 add_subdirectory(${TOAST_SOURCE_DIR})
 add_subdirectory(${TOAST_EXAMPLES_DIR})
+add_subdirectory(${TOAST_TEST_DIR})
 
 

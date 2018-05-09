@@ -122,9 +122,11 @@ contains
 
         ! reset messages by init then cleanup
         !! this maybe slow - not sure
-        if(allocated(this%messages)) deallocate(this%messages)
-        this%arraysize = 0_ki4
-        allocate(this%messages(this%arraysize))
+        if(this%isinit .eqv. .true.) then
+            if(allocated(this%messages)) deallocate(this%messages)
+            this%arraysize = 0_ki4
+            allocate(this%messages(this%arraysize))
+        end if
 
     end subroutine reset
 
