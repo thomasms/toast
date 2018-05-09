@@ -16,18 +16,16 @@ module toast_test_case_m
     implicit none
     private
 
+#include "types/testobjectbase.h"
+
     !> The base test case type used for assertions
     !! This can be used in two ways
     !! 1. Use it to do simple assertions without run
     !! 2. Extend this and implement run subroutine
-    type, public :: TestCase
+    type, extends(TestObject), public :: TestCase
     private
-        logical      :: isinit    = .false.
         integer(ki4) :: arraysize = 0_ki4
-        integer(ki4) :: pcount    = 0_ki4
-        integer(ki4) :: fcount    = 0_ki4
         type(string_t), dimension(:), allocatable :: messages
-        character(25), public :: name = "Test Case"
     contains
         procedure :: init                       !< Initialise
         procedure :: reset                      !< Reset test case and counts

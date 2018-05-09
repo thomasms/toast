@@ -17,14 +17,19 @@ module toast_test_suite_m
     implicit none
     private
 
+!! With fortran we cannot have protected type inheritance like in C++
+!! the alternative is to put everything in one module, but this is dirty
+!! and hard to maintain.
+!! So we use include with a private type in each module that inherits from it.
+!! Since it is private there are no issues with duplicate declarations
+!! and we still only define it once.
+#include "types/testobjectbase.h"
+
     !> Test suite - a collection of test cases
-    type, public :: TestSuite
+    type, extends(TestObject), public :: TestSuite
     private
         type(TestCasePoly), dimension(:), allocatable  :: testcases
-        logical                                        :: isinit = .false.
         integer(ki4)                                   :: arraysize = 0_ki4
-        integer(ki4)                                   :: pcount    = 0_ki4
-        integer(ki4)                                   :: fcount    = 0_ki4
     contains
         procedure :: init                       !< Initialise
         procedure :: size                       !< Get the size
@@ -43,8 +48,13 @@ module toast_test_suite_m
 contains
 
     !> Initialise
-    subroutine init(this)
-        class(TestSuite), intent(inout) :: this
+    subroutine init(this, name)
+        class(TestSuite), intent(inout)    :: this
+        character(*), intent(in), optional :: name
+
+        if(present(name))then
+            this%name = name
+        end if
 
         if(this%isinit .eqv. .false.) then
             allocate(this%testcases(0))
@@ -147,10 +157,17 @@ contains
     end subroutine append
 
     !> constructor
-    function constructor()
+    function constructor(name)
+        character(*), intent(in), optional :: name
+
         type(TestSuite) :: constructor      !< test suite type to construct
 
-        call constructor%init()
+        if(present(name))then
+            call constructor%init(name)
+        else
+            call constructor%init()
+        end if
+
     end function constructor
 
 end module toast_test_suite_m

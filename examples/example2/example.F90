@@ -86,7 +86,7 @@ program example
     implicit none
 
     type(TestSuite) :: suite
-    suite = TestSuite()
+    suite = TestSuite(name="SuiteExample")
 
     ! add the test cases here
     call suite%append(PassingTestCaseExample(name="passing_case1"))

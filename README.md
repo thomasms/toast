@@ -14,6 +14,7 @@ Hence the need for Toast!
 Still very early, API likely to change.
 - [x] Basic Test type
 - [x] Support Int, Real and logical assert
+- [ ] Support Complex assert
 - [x] Tolerances (absolute + relative) for real
 - [x] Setup CI
 - [ ] Testing needs testing
