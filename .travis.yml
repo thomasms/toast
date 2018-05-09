@@ -57,6 +57,8 @@ script:
   - cd build
   - cmake ..
   - make
+  - ./bin/tests/test_testcase_init
+  - ./bin/tests/test_testcase_reset
   - ./bin/toastexample1
   - ./bin/toastexample2
 

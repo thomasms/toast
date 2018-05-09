@@ -4,6 +4,8 @@ program example
 
     type(TestCase) :: test
 
+    write(*, "(A)") " *** TestCase::init ***"
+
     call test%init(name="example1")
     write(*, "(A)") "TestCase::init - call once OK"
 
@@ -18,5 +20,7 @@ program example
     call test%init(name="example3")
     call test%init()
     write(*, "(A)") "TestCase::init - call three times with optional names OK"
+
+    write(*, "(A)") " ******************"
 
 end program example
