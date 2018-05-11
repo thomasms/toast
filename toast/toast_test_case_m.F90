@@ -16,6 +16,12 @@ module toast_test_case_m
     implicit none
     private
 
+!! With fortran we cannot have protected type inheritance like in C++
+!! the alternative is to put everything in one module, but this is dirty
+!! and hard to maintain.
+!! So we use include with a private type in each module that inherits from it.
+!! Since it is private there are no issues with duplicate declarations
+!! and we still only define it once.
 #include "types/testobjectbase.h"
 
     !> The base test case type used for assertions
@@ -242,49 +248,49 @@ contains
 
 !! Integer asserts
 #define MACRO_INT_TYPE ki1
-#include "assertequalintegertemplate.h"
+#include "asserts/assertequalintegertemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki2
-#include "assertequalintegertemplate.h"
+#include "asserts/assertequalintegertemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki4
-#include "assertequalintegertemplate.h"
+#include "asserts/assertequalintegertemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki8
-#include "assertequalintegertemplate.h"
+#include "asserts/assertequalintegertemplate.h"
 #undef MACRO_INT_TYPE
 
 !! Integer 1d array asserts
 #define MACRO_INT_TYPE ki1
-#include "assertequalintegerarraytemplate.h"
+#include "asserts/assertequalintegerarraytemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki2
-#include "assertequalintegerarraytemplate.h"
+#include "asserts/assertequalintegerarraytemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki4
-#include "assertequalintegerarraytemplate.h"
+#include "asserts/assertequalintegerarraytemplate.h"
 #undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki8
-#include "assertequalintegerarraytemplate.h"
+#include "asserts/assertequalintegerarraytemplate.h"
 #undef MACRO_INT_TYPE
 
 !! Real asserts
 #define MACRO_REAL_TYPE kr4
-#include "assertequalrealtemplate.h"
+#include "asserts/assertequalrealtemplate.h"
 #undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr8
-#include "assertequalrealtemplate.h"
+#include "asserts/assertequalrealtemplate.h"
 #undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr16
-#include "assertequalrealtemplate.h"
+#include "asserts/assertequalrealtemplate.h"
 #undef MACRO_REAL_TYPE
 
     !> Add a message to the test case
