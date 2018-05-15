@@ -1,3 +1,6 @@
 [submodule "external/fork"]
 	path = external/fork
 	url = https://github.com/thomasms/fork
+[submodule "external/json-fortran"]
+	path = external/json-fortran
+	url = https://github.com/thomasms/json-fortran

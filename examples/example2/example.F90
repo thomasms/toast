@@ -97,7 +97,9 @@ program example
 
     ! Run them and print output
     call suite%runall()
-
     call suite%printsummary()
+
+    ! write to JSON
+    call jsonwritetofile(suite, "example2.json")
 
 end program example

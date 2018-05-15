@@ -81,6 +81,7 @@ link_directories (${TOAST_BUILD_DIR}/lib)
 
 # external sources
 set (FORK_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/fork)
+set (JSON_FORTRAN_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/json-fortran/src)
 
 # sources
 add_subdirectory(${TOAST_SOURCE_DIR})

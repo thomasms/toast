@@ -12,6 +12,7 @@
 !> Test case module for TOAST
 module toast_test_case_m
     use fork_m
+#include "json/includes.h"
     use toast_util_m
     implicit none
     private
@@ -38,6 +39,7 @@ module toast_test_case_m
         procedure :: passcount                  !< Pass count
         procedure :: failcount                  !< Fail count
         procedure :: totalcount                 !< Total count
+        procedure :: serialize => json_serialize !< Serialize to JSON
         procedure :: printsummary               !< Print the counts
         procedure :: run                        !< Runs test case by calling init and test
         procedure :: test                       !< The test case assertions - does nothing for base type
@@ -311,6 +313,23 @@ contains
         endif
 
     end subroutine appendmessage
+
+    !> Serialize dose rate data to JSON
+    subroutine json_serialize(this, core, parent)
+        class(TestCase), intent(in)              :: this      !< Object instance
+        type(json_core), intent(inout)           :: core      !< The JSON core object
+        type(json_value), pointer, intent(inout) :: parent    !< The parent node - cannot be null
+
+        type(json_value), pointer :: child
+
+        call core%create_object(child, 'test_case')
+        call core%add(parent, child)
+
+        call core%add(child, 'name', trim(this%name))
+        call core%add(child, 'passcount', this%pcount)
+        call core%add(child, 'failcount', this%fcount)
+
+    end subroutine json_serialize
 
     !> constructor
     function constructor()
