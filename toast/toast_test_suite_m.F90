@@ -34,6 +34,8 @@ module toast_test_suite_m
         procedure :: init                       !< Initialise
         procedure :: size                       !< Get the size
         procedure :: append                     !< Append a test case
+        procedure :: iterate                    !< Iterate through test cases - intent(inout)
+        procedure :: iterate_const              !< Iterate through test cases - intent(in)
         procedure :: runall                     !< Run all test cases
 #include "declarecounts.h"
         procedure :: printsummary
@@ -91,19 +93,59 @@ contains
 
     end function size
 
+    !> Iterate through test cases
+    subroutine iterate(this, iterator_func)
+        class(TestSuite), intent(inout) :: this
+        interface
+            subroutine iterator_func(test_case)
+                import TestCase
+                class(TestCase), intent(inout)  :: test_case
+            end subroutine iterator_func
+        end interface
+
+        integer(ki4) :: i
+
+        do i = 1_ki4, this%arraysize
+            call iterator_func(this%testcases(i)%raw)
+        end do
+
+    end subroutine iterate
+
+    !> Iterate through test cases
+    subroutine iterate_const(this, iterator_func)
+        class(TestSuite), intent(in) :: this
+        interface
+            subroutine iterator_func(test_case)
+                import TestCase
+                class(TestCase), intent(in)  :: test_case
+            end subroutine iterator_func
+        end interface
+
+        integer(ki4) :: i
+
+        do i = 1_ki4, this%arraysize
+            call iterator_func(this%testcases(i)%raw)
+        end do
+
+    end subroutine iterate_const
+
     !> Run all the test cases
     subroutine runall(this)
         class(TestSuite), intent(inout) :: this
 
-        integer(ki4) :: i
+        call this%iterate(run)
 
-        do i = 1, this%size()
-            if(this%testcases(i)%raw%run())then
-                this%pcount = this%pcount + 1_ki4
-            else
-                this%fcount = this%fcount + 1_ki4
-            end if
-        end do
+        contains
+            subroutine run(test_case)
+                class(TestCase), intent(inout) :: test_case
+
+                if(test_case%run())then
+                    this%pcount = this%pcount + 1_ki4
+                else
+                    this%fcount = this%fcount + 1_ki4
+                end if
+
+            end subroutine run
 
     end subroutine runall
 

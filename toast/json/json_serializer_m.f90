@@ -72,9 +72,15 @@ contains
         call core%add(child, 'passcount', test_suite%passcount())
         call core%add(child, 'failcount', test_suite%failcount())
 
-!        do i = 1, test_suite%size()
-!            call test_suite%testcases(i)%raw%serialize(core, child)
-!        end do
+        call test_suite%iterate_const(serialize)
+
+        contains
+            subroutine serialize(test_case)
+                class(TestCase), intent(in) :: test_case
+
+                call jsonserialize_testcase(test_case, core, child)
+
+            end subroutine serialize
 
     end subroutine jsonserialize_testsuite
 
