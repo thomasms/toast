@@ -7,7 +7,6 @@ set (TOASTJSON_SOURCES ${JSON_FORTRAN_SOURCE_DIR}/json_kinds.F90
                        ${JSON_FORTRAN_SOURCE_DIR}/json_value_module.F90
                        ${JSON_FORTRAN_SOURCE_DIR}/json_file_module.F90
                        ${JSON_FORTRAN_SOURCE_DIR}/json_module.F90
-                       json/json_serializable_m.f90
                        json/json_serializer_m.f90)
 
 set (TOASTLIB_SOURCES ${TOASTJSON_SOURCES}

@@ -1,5 +1,5 @@
 !> Base test object
-type, extends(JsonSerializable), abstract :: TestObject
+type, abstract :: TestObject
 private
     logical       :: isinit    = .false.
     integer(ki4)  :: pcount    = 0_ki4

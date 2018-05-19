@@ -12,7 +12,6 @@
 !> Test suite module for TOAST
 module toast_test_suite_m
     use fork_m
-#include "json/includes.h"
     use toast_test_case_m
     use toast_util_m
     implicit none
@@ -36,7 +35,7 @@ module toast_test_suite_m
         procedure :: size                       !< Get the size
         procedure :: append                     !< Append a test case
         procedure :: runall                     !< Run all test cases
-        procedure :: serialize => json_serialize !< Serialize to JSON
+#include "declarecounts.h"
         procedure :: printsummary
             final :: finalize
         procedure, private :: cleanup
@@ -108,6 +107,10 @@ contains
 
     end subroutine runall
 
+#define MACRO_TEST_TYPE TestSuite
+#include "definecounts.h"
+#undef MACRO_TEST_TYPE
+
     !> Pretty print summary
     subroutine printsummary(this)
         class(TestSuite), intent(in) :: this     !< Test case type
@@ -157,28 +160,6 @@ contains
         endif
 
     end subroutine append
-
-    !> Serialize dose rate data to JSON
-    subroutine json_serialize(this, core, parent)
-        class(TestSuite), intent(in)             :: this      !< Object instance
-        type(json_core), intent(inout)           :: core      !< The JSON core object
-        type(json_value), pointer, intent(inout) :: parent    !< The parent node - cannot be null
-
-        type(json_value), pointer :: child
-        integer(ki4) :: i
-
-        call core%create_object(child, 'test_suite')
-        call core%add(parent, child)
-
-        call core%add(child, 'name', trim(this%name))
-        call core%add(child, 'passcount', this%pcount)
-        call core%add(child, 'failcount', this%fcount)
-
-        do i = 1, this%size()
-            call this%testcases(i)%raw%serialize(core, child)
-        end do
-
-    end subroutine json_serialize
 
     !> constructor
     function constructor(name)
