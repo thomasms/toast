@@ -157,15 +157,12 @@ contains
     subroutine printsummary(this)
         class(TestSuite), intent(in) :: this     !< Test case type
 
-        integer(ki4) :: i, passerts, fasserts
+        integer(ki4) :: passerts, fasserts
 
         passerts = 0_ki4
         fasserts = 0_ki4
 
-        do i = 1_ki4, this%arraysize
-            passerts = passerts + this%testcases(i)%raw%passcount()
-            fasserts = fasserts + this%testcases(i)%raw%failcount()
-        end do
+        call this%iterate_const(getcounts)
 
         !! print results
         write(*, "(A)") " TOAST RESULTS "
@@ -175,6 +172,15 @@ contains
         write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Failed test cases: ", &
               & this%fcount, " / ", this%pcount + this%fcount, "] (", fasserts, &
               & " / ", passerts + fasserts, " asserts)"
+
+        contains
+            subroutine getcounts(test_case)
+                class(TestCase), intent(in) :: test_case
+
+                passerts = passerts + test_case%passcount()
+                fasserts = fasserts + test_case%passcount()
+
+            end subroutine getcounts
 
     end subroutine printsummary
 
