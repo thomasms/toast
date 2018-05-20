@@ -23,7 +23,7 @@ Still very early, API likely to change.
 - [ ] Support for arrays
 - [ ] Support for mpi
 - [ ] Ensure threadsafety
-- [ ] JSON output
+- [x] JSON output
 - [ ] File comparision
 - [ ] Regression testing framework
 
