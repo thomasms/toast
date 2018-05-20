@@ -62,7 +62,7 @@ contains
         type(json_core), intent(inout)           :: core        !< The JSON core object
         type(json_value), pointer, intent(inout) :: parent      !< The parent node - cannot be null
 
-        type(json_value), pointer :: child
+        type(json_value), pointer :: child, grandchild
         integer(ki4) :: i
 
         call core%create_object(child, 'test_suite')
@@ -72,13 +72,15 @@ contains
         call core%add(child, 'passcount', test_suite%passcount())
         call core%add(child, 'failcount', test_suite%failcount())
 
+        call core%create_array(grandchild, 'test_cases')
+        call core%add(child, grandchild)
         call test_suite%iterate_const(serialize)
 
         contains
             subroutine serialize(test_case)
                 class(TestCase), intent(in) :: test_case
 
-                call jsonserialize_testcase(test_case, core, child)
+                call jsonserialize_testcase(test_case, core, grandchild)
 
             end subroutine serialize
 
@@ -99,6 +101,7 @@ contains
         call jsonwritetofile_init(core, base)
 
         ! write the output
+        call core%create_object(base, '')
         call jsonserialize(output, core, base)
 
         ! finalise JSON writing
@@ -121,6 +124,7 @@ contains
         call jsonwritetofile_init(core, base)
 
         ! write the output
+        call core%create_object(base, '')
         call jsonserialize(output, core, base)
 
         ! finalise JSON writing
@@ -135,7 +139,6 @@ contains
 
         ! initialise JSON core
         call core%initialize()
-        call core%create_object(base,'')
 
     end subroutine jsonwritetofile_init
 

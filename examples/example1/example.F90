@@ -39,4 +39,5 @@ program example
 
     ! Print summary at the end
     call test%printsummary()
+    call jsonwritetofile(test, "example1.json")
 end program example
