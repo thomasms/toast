@@ -29,16 +29,13 @@ module toast_test_case_m
     !! 1. Use it to do simple assertions without run
     !! 2. Extend this and implement run subroutine
     type, extends(TestObject), public :: TestCase
-    private
-        integer(ki4) :: arraysize = 0_ki4
         type(string_t), dimension(:), allocatable :: messages
     contains
         procedure :: init                       !< Initialise
         procedure :: reset                      !< Reset test case and counts
-#include "declarecounts.h"
-        procedure :: printsummary               !< Print the counts
         procedure :: run                        !< Runs test case by calling init and test
         procedure :: test                       !< The test case assertions - does nothing for base type
+        procedure :: printsummary
         procedure :: asserttrue                 !< Assert condition is true
         procedure :: assertfalse                !< Assert condition is false
         procedure :: assertequal_ki1            !< Assert integers are equal (ki1)
@@ -106,7 +103,22 @@ contains
 
         call this%cleanup()
 
+#ifndef TOAST_NO_STOP
+        call this%checkfailure()
+#endif
+
     end subroutine finalize
+
+    !> Check for failures and stops with an error code is so.
+    subroutine checkfailure(this)
+        class(TestObject), intent(in) :: this         !< Test case type
+
+        if(this%fcount > 0)then
+            write(*, "(A)") " *** FAILED!"
+            stop 1
+        end if
+
+    end subroutine checkfailure
 
     !> Test case Finalize
     subroutine poly_finalize(this)
@@ -176,7 +188,7 @@ contains
         ! does nothing here
     end subroutine test
 
-#define MACRO_TEST_TYPE TestCase
+#define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
 #undef MACRO_TEST_TYPE
 

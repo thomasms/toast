@@ -102,4 +102,7 @@ program example
     ! write to JSON
     call jsonwritetofile(suite, "example2.json")
 
+    ! check the result
+    call suite%checkfailure()
+
 end program example

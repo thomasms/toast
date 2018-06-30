@@ -29,7 +29,6 @@ module toast_test_suite_m
     type, extends(TestObject), public :: TestSuite
     private
         type(TestCasePoly), dimension(:), allocatable  :: testcases
-        integer(ki4)                                   :: arraysize = 0_ki4
     contains
         procedure :: init                       !< Initialise
         procedure :: size                       !< Get the size
@@ -37,7 +36,6 @@ module toast_test_suite_m
         procedure :: iterate                    !< Iterate through test cases - intent(inout)
         procedure :: iterate_const              !< Iterate through test cases - intent(in)
         procedure :: runall                     !< Run all test cases
-#include "declarecounts.h"
         procedure :: printsummary
             final :: finalize
         procedure, private :: cleanup
@@ -72,7 +70,22 @@ contains
 
         call this%cleanup()
 
+#ifndef TOAST_NO_STOP
+        call this%checkfailure()
+#endif
+
     end subroutine finalize
+
+    !> Check for failures and stops with an error code is so.
+    subroutine checkfailure(this)
+        class(TestObject), intent(in) :: this         !< Test suite type
+
+        if(this%fcount > 0)then
+            write(*, "(A)") " *** FAILED!"
+            stop 1
+        end if
+
+    end subroutine checkfailure
 
     !> Cleanup
     subroutine cleanup(this)
@@ -149,7 +162,7 @@ contains
 
     end subroutine runall
 
-#define MACRO_TEST_TYPE TestSuite
+#define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
 #undef MACRO_TEST_TYPE
 
