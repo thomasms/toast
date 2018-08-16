@@ -31,7 +31,7 @@ module toast_test_suite_m
         type(TestCasePoly), dimension(:), allocatable  :: testcases
     contains
         procedure :: init                       !< Initialise
-        procedure :: size                       !< Get the size
+        procedure :: length                     !< Get the size
         procedure :: append                     !< Append a test case
         procedure :: iterate                    !< Iterate through test cases - intent(inout)
         procedure :: iterate_const              !< Iterate through test cases - intent(in)
@@ -56,11 +56,6 @@ contains
         if(present(name))then
             this%name = name
         end if
-
-        if(this%isinit .eqv. .false.) then
-            allocate(this%testcases(0))
-            this%isinit = .true.
-        endif
 
     end subroutine init
 
@@ -91,20 +86,20 @@ contains
     subroutine cleanup(this)
         class(TestSuite), intent(inout) :: this
 
-        if(this%isinit .eqv. .true.) then
+        if(this%arraysize > 0 .and. allocated(this%testcases))then
             deallocate(this%testcases)
-            this%isinit = .false.
+            this%arraysize = 0
         endif
 
     end subroutine cleanup
 
     !> Size
-    integer(ki4) function size(this)
+    integer(ki4) function length(this)
         class(TestSuite), intent(in) :: this
 
-        size = this%arraysize
+        length = this%arraysize
 
-    end function size
+    end function length
 
     !> Iterate through test cases
     subroutine iterate(this, iterator_func)
@@ -204,21 +199,34 @@ contains
 
         type(TestCasePoly), dimension(:), allocatable :: tmp
         type(TestCasePoly) :: testpoly
+        integer(ki4) :: prevcount
         integer(ki4) :: prevsize
+        integer(ki4) :: newsize
 
-        if(this%isinit .eqv. .true.) then
-            prevsize = this%size()
-            allocate(tmp(prevsize + 1_ki4))
-            tmp(1_ki4:prevsize) = this%testcases
+        ! the actual number of items appended
+        prevcount = this%arraysize
+
+        ! the actual size of the container - not necessarily the same as the count
+        prevsize = 0_ki4
+        if(allocated(this%testcases))then
+            prevsize = size(this%testcases)
+        end if
+
+        if(prevcount >= prevsize)then
+            newsize = max(prevsize*this%scalefactor, prevsize+1_ki4)
+            allocate(tmp(1_ki4:newsize))
+            if(prevsize > 0_ki4)then
+                tmp(1_ki4:prevsize) = this%testcases
+            end if
             call move_alloc(tmp, this%testcases)
-            this%arraysize = this%arraysize + 1_ki4
+        end if
 
-            ! Since we must wrap the test case in the polymorphic
-            ! type TestCasePoly we need to allocate the raw here
-            ! TestCasePoly finalize will cleanup for us
-            allocate(testpoly%raw, source = test)
-            this%testcases(this%arraysize) = testpoly
-        endif
+        this%arraysize = this%arraysize + 1_ki4
+        ! Since we must wrap the test case in the polymorphic
+        ! type TestCasePoly we need to allocate the raw here
+        ! TestCasePoly finalize will cleanup for us
+        allocate(testpoly%raw, source = test)
+        this%testcases(this%arraysize) = testpoly
 
     end subroutine append
 

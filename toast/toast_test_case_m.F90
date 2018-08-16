@@ -89,12 +89,6 @@ contains
             this%name = name
         end if
 
-        if(this%isinit .eqv. .false.) then
-            this%arraysize = 0_ki4
-            allocate(this%messages(this%arraysize))
-            this%isinit = .true.
-        end if
-
     end subroutine init
 
     !> Finalize
@@ -136,13 +130,8 @@ contains
         this%pcount = 0_ki4
         this%fcount = 0_ki4
 
-        ! reset messages by init then cleanup
-        !! this maybe slow - not sure
-        if(this%isinit .eqv. .true.) then
-            if(allocated(this%messages)) deallocate(this%messages)
-            this%arraysize = 0_ki4
-            allocate(this%messages(this%arraysize))
-        end if
+        ! Cleanup
+        call this%cleanup()
 
     end subroutine reset
 
@@ -150,11 +139,10 @@ contains
     subroutine cleanup(this)
         class(TestCase), intent(inout) :: this         !< Test case type
 
-        if(this%isinit .eqv. .true.) then
+        if(this%arraysize > 0 .and. allocated(this%messages))then
             deallocate(this%messages)
-            this%isinit = .false.
-            this%arraysize = 0_ki4
-        end if
+            this%arraysize = 0
+        endif
 
     end subroutine cleanup
 
@@ -173,7 +161,6 @@ contains
         class(TestCase), intent(inout) :: this     !< Test case type
 
         run = .false.
-        call this%init()
         call this%test()
         if(this%fcount == 0_ki4)then
             run = .true.
@@ -292,19 +279,32 @@ contains
         character(*), intent(in)       :: message
 
         type(string_t), dimension(:), allocatable :: tmp
+        integer(ki4) :: prevcount
         integer(ki4) :: prevsize
+        integer(ki4) :: newsize
 
-        if(this%isinit .eqv. .true.) then
-            prevsize = this%arraysize
-            allocate(tmp(prevsize + 1_ki4))
-            tmp(1_ki4:prevsize) = this%messages
+        ! the actual number of items appended
+        prevcount = this%arraysize
+
+        ! the actual size of the container - not necessarily the same as the count
+        prevsize = 0_ki4
+        if(allocated(this%messages))then
+            prevsize = size(this%messages)
+        end if
+
+        if(prevcount >= prevsize)then
+            newsize = max(prevsize*this%scalefactor, prevsize+1_ki4)
+            allocate(tmp(1_ki4:newsize))
+            if(prevsize > 0_ki4)then
+                tmp(1_ki4:prevsize) = this%messages
+            end if
             call move_alloc(tmp, this%messages)
-            this%arraysize = this%arraysize + 1_ki4
-            this%messages(this%arraysize)%raw = trim(message)
-        endif
+        end if
+
+        this%arraysize = this%arraysize + 1_ki4
+        this%messages(this%arraysize)%raw = trim(message)
 
     end subroutine appendmessage
-
 
     !> constructor
     function constructor()
