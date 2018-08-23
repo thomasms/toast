@@ -192,6 +192,7 @@ contains
               & this%fcount, " / ", this%totalcount(), " ] ", repeat("-", this%fcount)
 
         ! print failed messages
+        write(*, "(A)") ""
         do i = 1_ki4, this%arraysize
             write(*, "(A)") " !! FAILED - "//trim(this%messages(i)%raw)
         end do

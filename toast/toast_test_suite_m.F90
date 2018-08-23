@@ -186,7 +186,7 @@ contains
                 class(TestCase), intent(in) :: test_case
 
                 passerts = passerts + test_case%passcount()
-                fasserts = fasserts + test_case%passcount()
+                fasserts = fasserts + test_case%failcount()
 
             end subroutine getcounts
 
