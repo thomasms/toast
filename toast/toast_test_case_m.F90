@@ -177,7 +177,6 @@ contains
 
 #define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
-#undef MACRO_TEST_TYPE
 
     !> Pretty print summary
     subroutine printsummary(this)
@@ -230,49 +229,38 @@ contains
 !! Integer asserts
 #define MACRO_INT_TYPE ki1
 #include "asserts/assertequalintegertemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki2
 #include "asserts/assertequalintegertemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki4
 #include "asserts/assertequalintegertemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki8
 #include "asserts/assertequalintegertemplate.h"
-#undef MACRO_INT_TYPE
 
 !! Integer 1d array asserts
 #define MACRO_INT_TYPE ki1
 #include "asserts/assertequalintegerarraytemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki2
 #include "asserts/assertequalintegerarraytemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki4
 #include "asserts/assertequalintegerarraytemplate.h"
-#undef MACRO_INT_TYPE
 
 #define MACRO_INT_TYPE ki8
 #include "asserts/assertequalintegerarraytemplate.h"
-#undef MACRO_INT_TYPE
 
 !! Real asserts
 #define MACRO_REAL_TYPE kr4
 #include "asserts/assertequalrealtemplate.h"
-#undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr8
 #include "asserts/assertequalrealtemplate.h"
-#undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr16
 #include "asserts/assertequalrealtemplate.h"
-#undef MACRO_REAL_TYPE
 
     !> Add a message to the test case
     subroutine appendmessage(this, message)

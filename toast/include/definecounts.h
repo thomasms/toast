@@ -19,3 +19,5 @@
 
         totalcount = this%fcount + this%pcount
     end function totalcount
+
+#undef MACRO_TEST_TYPE

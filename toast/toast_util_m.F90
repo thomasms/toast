@@ -50,14 +50,11 @@ contains
 
 #define MACRO_REAL_TYPE kr4
 #include "areclosetemplate.h"
-#undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr8
 #include "areclosetemplate.h"
-#undef MACRO_REAL_TYPE
 
 #define MACRO_REAL_TYPE kr16
 #include "areclosetemplate.h"
-#undef MACRO_REAL_TYPE
 
 end module toast_util_m

@@ -23,3 +23,5 @@ subroutine MACRO_ASSERTEQUALREAL_NAME(MACRO_REAL_TYPE)(this, a, b, rel_tol, abs_
     end if
 
 end subroutine MACRO_ASSERTEQUALREAL_NAME(MACRO_REAL_TYPE)
+
+#undef MACRO_REAL_TYPE

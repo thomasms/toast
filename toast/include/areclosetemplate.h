@@ -24,3 +24,5 @@ logical pure function MACRO_ARECLOSE_NAME(MACRO_REAL_TYPE)(a, b, rel_tol, abs_to
     MACRO_ARECLOSE_NAME(MACRO_REAL_TYPE) = abs(a - b) <= max(rt * max(abs(a), abs(b)), at)
 
 end function MACRO_ARECLOSE_NAME(MACRO_REAL_TYPE)
+
+#undef MACRO_REAL_TYPE

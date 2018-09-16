@@ -21,3 +21,5 @@ subroutine MACRO_ASSERTEQUALINT_NAME(MACRO_INT_TYPE)(this, a, b, message)
     end if
 
 end subroutine MACRO_ASSERTEQUALINT_NAME(MACRO_INT_TYPE)
+
+#undef MACRO_INT_TYPE

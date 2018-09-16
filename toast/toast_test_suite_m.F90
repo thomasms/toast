@@ -85,12 +85,17 @@ contains
     !> Cleanup
     subroutine cleanup(this)
         class(TestSuite), intent(inout) :: this
+        integer(ki4) :: i
 
         if(this%arraysize > 0 .and. allocated(this%testcases))then
+
+            do i = 1_ki4, this%arraysize
+                deallocate(this%testcases(i)%raw)
+            end do
+
             deallocate(this%testcases)
             this%arraysize = 0
         endif
-
     end subroutine cleanup
 
     !> Size
@@ -159,7 +164,6 @@ contains
 
 #define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
-#undef MACRO_TEST_TYPE
 
     !> Pretty print summary
     subroutine printsummary(this)
