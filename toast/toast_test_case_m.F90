@@ -39,6 +39,7 @@ module toast_test_case_m
         procedure :: test                       !< The test case assertions - does nothing for base type
         procedure :: asserttrue                 !< Assert condition is true
         procedure :: assertfalse                !< Assert condition is false
+        procedure :: assertequal_str            !< Assert character arrays are equal
         procedure :: assertequal_ki1            !< Assert integers are equal (ki1)
         procedure :: assertequal_ki2            !< Assert integers are equal (ki2)
         procedure :: assertequal_ki4            !< Assert integers are equal (ki4)
@@ -50,7 +51,8 @@ module toast_test_case_m
         procedure :: assertequalarray_ki2       !< Assert integer arrays are equal (ki2)
         procedure :: assertequalarray_ki4       !< Assert integer arrays are equal (ki4)
         procedure :: assertequalarray_ki8       !< Assert integer arrays are equal (ki8)
-          generic :: assertequal => assertequal_ki1, &
+          generic :: assertequal => assertequal_str, &
+                                    assertequal_ki1, &
                                     assertequal_ki2, &
                                     assertequal_ki4, &
                                     assertequal_ki8, &
@@ -226,6 +228,24 @@ contains
         call this%asserttrue(.not. condition, message)
 
     end subroutine assertfalse
+
+    !> Assert strings are equal
+    subroutine assertequal_str(this, str1, str2, message)
+        class(TestCase), intent(inout)      :: this         !< Test case type
+        character(*), intent(in)            :: str1
+        character(*), intent(in)            :: str2
+        character(*), intent(in), optional  :: message
+
+        if(trim(adjustl(str1)) == trim(adjustl(str2)))then
+            this%pcount = this%pcount + 1_ki4
+        else
+            this%fcount = this%fcount + 1_ki4
+            if(present(message)) then
+                call this%appendmessage(message)
+            end if
+        end if
+
+    end subroutine assertequal_str
 
 !! Integer asserts
 #define MACRO_INT_TYPE ki1

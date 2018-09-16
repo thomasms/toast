@@ -36,6 +36,8 @@ program example
     call test%asserttrue(.false., "False should not be true.")
     call test%asserttrue(2_ki4*3_ki4 == 6_ki4, "2*3 == 6 should be true.")
     call test%assertfalse(.false., "False should be false.")
+    call test%assertequal("string one", "string two", "Assert strings are not equal")
+    call test%assertequal("string one", "string one", "Assert strings are now equal")
 
     ! Print summary at the end
     call printsummary(test)

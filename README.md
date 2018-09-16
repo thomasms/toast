@@ -14,11 +14,11 @@ Hence the need for Toast!
 Still very early, API likely to change.
 - [x] Basic Test type
 - [x] Support Int, Real and logical assert
+- [x] Support for comparing character arrays
 - [ ] Support Complex assert
 - [x] Tolerances (absolute + relative) for real
 - [x] Setup CI
 - [ ] Testing needs testing
-- [ ] Support for other types - character arrays need to be implemented
 - [ ] Support for derived data types
 - [ ] Support for arrays
 - [ ] Support for mpi

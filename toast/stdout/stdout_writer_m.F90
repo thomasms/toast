@@ -34,9 +34,9 @@ contains
         integer(ki4) :: i
 
         if(test%failcount() == 0)then
-            write(*, "(A)") colourstring(trim(test%name)//" - SUCCESS", CHAR_COLOUR_GREEN)
+            write(*, "(A)") colourstring(trim(test%name)//" - SUCCESS", CHAR_COLOUR_GREEN, bold=.true.)
         else
-            write(*, "(A)") colourstring(trim(test%name)//" - FAILURE", CHAR_COLOUR_RED)
+            write(*, "(A)") colourstring(trim(test%name)//" - FAILURE", CHAR_COLOUR_RED, bold=.true.)
         end if
 
         write(*, "(A, I7.1, A, I6.1, A, A)") "[Passed assertions:", &
@@ -47,7 +47,7 @@ contains
         ! print failed messages
         write(*, "(A)") ""
         do i = 1_ki4, test%getnrofmessages()
-            write(*, "(A)") " Failure @ "//trim(test%getmessage(i))
+            write(*, "(A)") colourstring(" Failure @ ", CHAR_COLOUR_BLACK, bold=.true.)//trim(test%getmessage(i))
         end do
         write(*, "(A)") ""
 
@@ -65,12 +65,12 @@ contains
         call test%iterate_const(getcounts)
 
         !! print results
-        write(*, "(A52)") colourstring("-- TOAST test results --", CHAR_COLOUR_BLACK, bold=.true.)
+        write(*, "(A56)") colourstring("-- TOAST test results --", CHAR_COLOUR_BLACK, bold=.true.)
         write(*, "(A)") ""
         if(test%failcount() == 0)then
-            write(*, "(A46)")colourstring("-- SUCCESS --", CHAR_COLOUR_GREEN, bold=.true.)
+            write(*, "(A50)")colourstring("-- SUCCESS --", CHAR_COLOUR_GREEN, bold=.true.)
         else
-            write(*, "(A46)")colourstring("-- FAILURE --", CHAR_COLOUR_RED, bold=.true.)
+            write(*, "(A50)")colourstring("-- FAILURE --", CHAR_COLOUR_RED, bold=.true.)
         end if
 
         write(*, "(A)") ""
