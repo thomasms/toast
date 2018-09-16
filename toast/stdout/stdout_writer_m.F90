@@ -64,7 +64,11 @@ contains
 
         call test%iterate_const(getcounts)
 
+        write(*, "(A56)")colourstring("-- test case results --", CHAR_COLOUR_BLACK, bold=.true.)
+        call test%iterate_const(printmessages)
+
         !! print results
+        write(*, "(A62)") colourstring("-------------------------------------", CHAR_COLOUR_BLACK, bold=.true.)
         write(*, "(A56)") colourstring("-- TOAST test results --", CHAR_COLOUR_BLACK, bold=.true.)
         write(*, "(A)") ""
         if(test%failcount() == 0)then
@@ -89,6 +93,13 @@ contains
                 fasserts = fasserts + test_case%failcount()
 
             end subroutine getcounts
+
+            subroutine printmessages(test_case)
+                class(TestCase), intent(in) :: test_case
+
+                call printsummary_testcase(test_case)
+
+            end subroutine printmessages
 
     end subroutine printsummary_testsuite
 
