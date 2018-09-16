@@ -28,7 +28,7 @@ program example
                          & message = "3 should equal 3.1 with higher tolerance")
 
     ! Print summary and reset
-    call test%printsummary()
+    call printsummary(test)
     call test%reset()
 
     ! logical asserts
@@ -38,7 +38,7 @@ program example
     call test%assertfalse(.false., "False should be false.")
 
     ! Print summary at the end
-    call test%printsummary()
+    call printsummary(test)
     call jsonwritetofile(test, "example1.json")
 
     call test%checkfailure()

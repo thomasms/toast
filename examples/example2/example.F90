@@ -95,9 +95,11 @@ program example
     call suite%append(FailAgainTestCaseExample(name="failing_case2"))
     call suite%append(PassingTestCaseExample(name="passing_case1_again"))
 
-    ! Run them and print output
+    ! Run them
     call suite%runall()
-    call suite%printsummary()
+
+    ! print summary
+    call printsummary(suite)
 
     ! write to JSON
     call jsonwritetofile(suite, "example2.json")

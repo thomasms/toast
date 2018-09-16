@@ -41,9 +41,6 @@ program example
 
     type(TestCase) :: test
 
-    ! Note the need for init here
-    call test%init()
-
     call test%assertequal(3_ki4, 5_ki4)
     call test%assertequal(3_ki4, 3_ki4)
 
@@ -53,7 +50,7 @@ program example
     call test%assertequal(3.0_kr4, 3.1_kr4, abs_tol=0.099_kr4)
     call test%assertequal(3.0_kr4, 3.1_kr4, abs_tol=0.1_kr4)
     
-    call test%printsummary()
+    call printsummary(test)
 
 end program example
 ```
@@ -143,7 +140,7 @@ program example
     implicit none
 
     type(TestSuite) :: suite
-    suite = TestSuite()
+    suite = TestSuite(name="My test suite")
 
     ! add the tests here
     call suite%append(PassingTestCaseExample(name="passing_case1"))
@@ -153,7 +150,8 @@ program example
     call suite%append(PassingTestCaseExample(name="passing_case1_again"))
 
     call suite%runall()
-    call suite%printsummary()
+    
+    call printsummary(suite)
 
 end program example
 ```
@@ -167,12 +165,10 @@ program example
     
     type(TestCase) :: test
 
-    ! Note the need for init here
-    call test%init()
-
     !> Will not compile since kr16 and kr4 are different types
     call test%assertequal(3.0_kr16, 3.0_kr4)
-    call test%printsummary()
+    
+    call printsummary(test)
 
 end program example
 ```

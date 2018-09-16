@@ -12,9 +12,10 @@
 !> Full TOAST module
 module toast
     use fork_m
-    use json_serializer_m
     use toast_test_case_m
     use toast_test_suite_m
+    use json_serializer_m
+    use stdout_writer_m
 
     implicit none
 

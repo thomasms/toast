@@ -36,7 +36,6 @@ module toast_test_suite_m
         procedure :: iterate                    !< Iterate through test cases - intent(inout)
         procedure :: iterate_const              !< Iterate through test cases - intent(in)
         procedure :: runall                     !< Run all test cases
-        procedure :: printsummary
             final :: finalize
         procedure, private :: cleanup
     end type TestSuite
@@ -76,7 +75,6 @@ contains
         class(TestObject), intent(in) :: this         !< Test suite type
 
         if(this%fcount > 0)then
-            write(*, "(A)") " *** FAILED!"
             stop 1
         end if
 
@@ -164,37 +162,6 @@ contains
 
 #define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
-
-    !> Pretty print summary
-    subroutine printsummary(this)
-        class(TestSuite), intent(in) :: this     !< Test case type
-
-        integer(ki4) :: passerts, fasserts
-
-        passerts = 0_ki4
-        fasserts = 0_ki4
-
-        call this%iterate_const(getcounts)
-
-        !! print results
-        write(*, "(A)") " TOAST RESULTS "
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Passed test cases: ", &
-              & this%pcount, " / ", this%pcount + this%fcount, "] (", passerts, &
-              & " / ", passerts + fasserts, " asserts)"
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Failed test cases: ", &
-              & this%fcount, " / ", this%pcount + this%fcount, "] (", fasserts, &
-              & " / ", passerts + fasserts, " asserts)"
-
-        contains
-            subroutine getcounts(test_case)
-                class(TestCase), intent(in) :: test_case
-
-                passerts = passerts + test_case%passcount()
-                fasserts = fasserts + test_case%failcount()
-
-            end subroutine getcounts
-
-    end subroutine printsummary
 
     !> Append - a bit slow for large appends
     subroutine append(this, test)

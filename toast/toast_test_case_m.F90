@@ -34,8 +34,9 @@ module toast_test_case_m
         procedure :: init                       !< Initialise
         procedure :: reset                      !< Reset test case and counts
         procedure :: run                        !< Runs test case by calling init and test
+        procedure :: getnrofmessages            !< Gets the number of messages
+        procedure :: getmessage                 !< Gets the message at a given index
         procedure :: test                       !< The test case assertions - does nothing for base type
-        procedure :: printsummary
         procedure :: asserttrue                 !< Assert condition is true
         procedure :: assertfalse                !< Assert condition is false
         procedure :: assertequal_ki1            !< Assert integers are equal (ki1)
@@ -108,7 +109,6 @@ contains
         class(TestObject), intent(in) :: this         !< Test case type
 
         if(this%fcount > 0)then
-            write(*, "(A)") " *** FAILED!"
             stop 1
         end if
 
@@ -175,29 +175,30 @@ contains
         ! does nothing here
     end subroutine test
 
+    !> Get the number of messages
+    integer(ki4) function getnrofmessages(this)
+        class(TestCase), intent(in) :: this        !< Test case type
+
+        getnrofmessages = this%arraysize
+
+    end function getnrofmessages
+
+    !> Get the message at index
+    function getmessage(this, index) result(message)
+        class(TestCase), intent(in) :: this        !< Test case type
+        integer(ki4), intent(in)    :: index       !< index of message must be >0 and <= getnrofmessages
+        character(:), allocatable   :: message
+
+        if(index > 0 .and. index <= this%arraysize)then
+            message = trim(this%messages(index)%raw)
+        else
+            message = ""
+        end if
+
+    end function getmessage
+
 #define MACRO_TEST_TYPE TestObject
 #include "definecounts.h"
-
-    !> Pretty print summary
-    subroutine printsummary(this)
-        class(TestCase), intent(in) :: this     !< Test case type
-
-        integer(ki4) :: i
-
-        write(*, "(A27)") " "//this%name//" "
-        write(*, "(A, I5.1, A, I5.1, A, A)") "[Passed assertions:", &
-              & this%pcount, " / ", this%totalcount(), " ] ", repeat("+", this%pcount)
-        write(*, "(A, I5.1, A, I5.1, A, A)") "[Failed assertions:",  &
-              & this%fcount, " / ", this%totalcount(), " ] ", repeat("-", this%fcount)
-
-        ! print failed messages
-        write(*, "(A)") ""
-        do i = 1_ki4, this%arraysize
-            write(*, "(A)") " !! FAILED - "//trim(this%messages(i)%raw)
-        end do
-        write(*, "(A)") ""
-
-    end subroutine printsummary
 
     !> Assert true
     subroutine asserttrue(this, condition, message)
