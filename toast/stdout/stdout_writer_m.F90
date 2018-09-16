@@ -12,6 +12,7 @@
 !> Test case module for handling std output information for TOAST
 module stdout_writer_m
     use fork_m
+    use stdout_ansi_colours_m
     use toast_test_case_m
     use toast_test_suite_m
     implicit none
@@ -32,10 +33,15 @@ contains
 
         integer(ki4) :: i
 
-        write(*, "(A27)") " "//test%name//" "
-        write(*, "(A, I5.1, A, I5.1, A, A)") "[Passed assertions:", &
+        if(test%failcount() == 0)then
+            write(*, "(A)") colourstring(trim(test%name)//" - SUCCESS", CHAR_COLOUR_GREEN)
+        else
+            write(*, "(A)") colourstring(trim(test%name)//" - FAILURE", CHAR_COLOUR_RED)
+        end if
+
+        write(*, "(A, I7.1, A, I6.1, A, A)") "[Passed assertions:", &
               & test%passcount(), " / ", test%totalcount(), " ] ", repeat("+", test%passcount())
-        write(*, "(A, I5.1, A, I5.1, A, A)") "[Failed assertions:",  &
+        write(*, "(A, I7.1, A, I6.1, A, A)") "[Failed assertions:",  &
               & test%failcount(), " / ", test%totalcount(), " ] ", repeat("-", test%failcount())
 
         ! print failed messages
@@ -59,11 +65,19 @@ contains
         call test%iterate_const(getcounts)
 
         !! print results
-        write(*, "(A)") " TOAST RESULTS "
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Passed test cases: ", &
+        write(*, "(A52)") colourstring("-- TOAST test results --", CHAR_COLOUR_BLACK, bold=.true.)
+        write(*, "(A)") ""
+        if(test%failcount() == 0)then
+            write(*, "(A46)")colourstring("-- SUCCESS --", CHAR_COLOUR_GREEN, bold=.true.)
+        else
+            write(*, "(A46)")colourstring("-- FAILURE --", CHAR_COLOUR_RED, bold=.true.)
+        end if
+
+        write(*, "(A)") ""
+        write(*, "(A, I6.1, A, I5.1, A, I8.1, A, I7.1, A)") "[Passed test cases: ", &
               & test%passcount(), " / ", test%totalcount(), "] (", passerts, &
               & " / ", passerts + fasserts, " asserts)"
-        write(*, "(A, I5.1, A, I5.1, A, I8.1, A, I8.1, A)") "[Failed test cases: ", &
+        write(*, "(A, I6.1, A, I5.1, A, I8.1, A, I7.1, A)") "[Failed test cases: ", &
               & test%failcount(), " / ", test%totalcount(), "] (", fasserts, &
               & " / ", passerts + fasserts, " asserts)"
 

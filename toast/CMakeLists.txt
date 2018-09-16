@@ -9,7 +9,8 @@ set (TOASTJSON_SOURCES ${JSON_FORTRAN_SOURCE_DIR}/json_kinds.F90
                        ${JSON_FORTRAN_SOURCE_DIR}/json_module.F90
                        json/json_serializer_m.f90)
 
-set (TOASTSTDOUT_SOURCES stdout/stdout_writer_m.F90)
+set (TOASTSTDOUT_SOURCES stdout/stdout_writer_m.F90
+                         stdout/stdout_ansi_colours_m.F90)
 
 set (TOASTLIB_SOURCES ${TOASTJSON_SOURCES}
                       ${TOASTSTDOUT_SOURCES}
@@ -18,8 +19,6 @@ set (TOASTLIB_SOURCES ${TOASTJSON_SOURCES}
                       toast_test_case_m.F90
                       toast_test_suite_m.F90
                       toast.F90)
-
-
 
 set_source_files_properties(${TOASTLIB_SOURCES} PROPERTIES COMPILE_FLAGS "${F90_FLAGS}")
 
