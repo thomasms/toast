@@ -156,6 +156,53 @@ program example
 end program example
 ```
 
+This will output:
+```bash
+[2136][tom@Unknown:~/Dev/toast/buildifort/bin]$ ./toastexample2
+                      -- test case results --
+passing_case1 - SUCCESS
+[Passed assertions:      6 /      6 ] ++++++
+[Failed assertions:      0 /      6 ] 
+
+
+failing_case1 - FAILURE
+[Passed assertions:      0 /      6 ] 
+[Failed assertions:      6 /      6 ] ------
+
+ Failure @ 127 should equal 127
+ Failure @ 32767 should equal 32767
+ Failure @ 3 should equal 3
+ Failure @ 3 should equal 3.1 with higher tolerance
+ Failure @ 2*3 == 6 should be true.
+ Failure @ False should be false.
+
+passing_case2 - SUCCESS
+[Passed assertions:      3 /      3 ] +++
+[Failed assertions:      0 /      3 ] 
+
+
+failing_case2 - FAILURE
+[Passed assertions:      0 /      2 ] 
+[Failed assertions:      2 /      2 ] --
+
+ Failure @ false cannot be true.
+ Failure @ arrays should not match
+
+passing_case1_again - SUCCESS
+[Passed assertions:      6 /      6 ] ++++++
+[Failed assertions:      0 /      6 ] 
+
+
+              -------------------------------------
+                     -- TOAST test results --
+
+                          -- FAILURE --
+
+[Passed test cases:      3 /     5] (      15 /      23 asserts)
+[Failed test cases:      2 /     5] (       8 /      23 asserts)
+```
+
+
 Due to generic type bound procedures on the TestCase type, the compiler catches errors when trying to compare different types, for example, the following will not compile:
 
 ```fortran
