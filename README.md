@@ -55,6 +55,26 @@ program example
 end program example
 ```
 
+This will output:
+```bash
+example1 - FAILURE
+[Passed assertions:     16 /     19 ] ++++++++++++++++
+[Failed assertions:      3 /     19 ] ---
+
+ Failure @ 3 does not equal 5
+ Failure @ arrays should not match
+ Failure @ 3 should not equal 3.1 with low tolerance
+
+example1 - FAILURE
+[Passed assertions:      4 /      6 ] ++++
+[Failed assertions:      2 /      6 ] --
+
+ Failure @ False should not be true.
+ Failure @ Assert strings are not equal
+
+1
+```
+
 A simple example of type 2 usage is given in the example below:
 
 ```fortran
