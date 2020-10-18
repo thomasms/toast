@@ -25,7 +25,6 @@ set(PROJECT_URL "${CPACK_PACKAGE_HOMEPAGE_URL}")
 include(GNUInstallDirs)
 
 # CTest setup
-# Needed for valgrind (usually only enable_testing() is needed)
 include(CTest)
 enable_testing()
 
@@ -135,7 +134,7 @@ install(FILES
     "${TOAST_MODULE_DIR}/stdout_writer_m.mod"
     "${TOAST_MODULE_DIR}/toast.mod"
     "${TOAST_MODULE_DIR}/toast_util_m.mod"
-    DESTINATION include
+    DESTINATION finclude/toast
 )
 
 # Examples
