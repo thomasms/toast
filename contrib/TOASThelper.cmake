@@ -62,6 +62,34 @@
 #   (bare executable name)
 # - If TOAST is installed locally, the target TOAST_external may not be
 #   defined.
+#
+# Example:
+#
+# # Tests thermo.inp and trans.inp using m_material.f90
+# add_toast_unit_test(
+#     TARGET ut_c1_property_data
+#     SOURCES "${TEST_SRC_BASE}/c1/c1_property_data.f90" "${SOFIRE2_1C_DEP_SOURCES}"
+#     DEPENDENCIES pretest_setup FLIBS_external
+#     RUN_DIRECTORY ${SOFIRE2_1C_TEST_DIR}
+# )
+#
+# Here we create a unit test named 'ut_c1_property_data'. This is also
+# the name of the test's compiled executable. The executable is built
+# from the source files ${TEST_SRC_BASE}/c1/c1_property_data.f90 and
+# the list of files in ${SOFIRE2_1C_DEP_SOURCES}. The unit test depends
+# on the targets 'pretest_setup' and 'FLIBS_external'. 'pretest_setup'
+# creates and populates the test directory SOFIRE2_1C_TEST_DIR.
+# 'FLIBS_external' downloads and builds a remote project which provides
+# some source files in the list SOFIRE2_1C_DEP_SOURCES. The test is run
+# in the directory ${SOFIRE2_1C_TEST_DIR}. The variables TEST_SRC_BASE,
+# SOFIRE2_1C_DEP_SOURCES, and SOFIRE2_1C_TEST_DIR are set prior to this
+# call. Not explicitly shown, the variables TOAST_MODULE_FILE,
+# TOAST_MODULE_DIR, TOAST_LIBRARY_DIR, and TOAST_LIB_NAME are set by
+# either BuildTOAST.cmake or FindTOAST.cmake prior to this function call.
+#
+# See https://gitlab.com/apthorpe/sofire2/-/blob/master/CMakeLists.txt
+# for a full example of this function in use
+
 function(add_toast_unit_test)
     # Define the supported set of keywords
     set(prefix ARG)
