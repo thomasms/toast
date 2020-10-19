@@ -121,19 +121,20 @@ install(TARGETS ${TOAST_LIB_NAME})
 
 # Fortran module (.mod) files
 # This list may contain unnecessary files; is more than toast.mod needed?
+# Verify this reduced list works
 install(FILES
-    "${TOAST_MODULE_DIR}/fork_m.mod"
-    "${TOAST_MODULE_DIR}/json_file_module.mod"
-    "${TOAST_MODULE_DIR}/json_kinds.mod"
-    "${TOAST_MODULE_DIR}/json_module.mod"
-    "${TOAST_MODULE_DIR}/json_parameters.mod"
-    "${TOAST_MODULE_DIR}/json_serializer_m.mod"
-    "${TOAST_MODULE_DIR}/json_string_utilities.mod"
-    "${TOAST_MODULE_DIR}/json_value_module.mod"
-    "${TOAST_MODULE_DIR}/stdout_ansi_colours_m.mod"
-    "${TOAST_MODULE_DIR}/stdout_writer_m.mod"
+    # "${TOAST_MODULE_DIR}/fork_m.mod"
+    # "${TOAST_MODULE_DIR}/json_file_module.mod"
+    # "${TOAST_MODULE_DIR}/json_kinds.mod"
+    # "${TOAST_MODULE_DIR}/json_module.mod"
+    # "${TOAST_MODULE_DIR}/json_parameters.mod"
+    # "${TOAST_MODULE_DIR}/json_serializer_m.mod"
+    # "${TOAST_MODULE_DIR}/json_string_utilities.mod"
+    # "${TOAST_MODULE_DIR}/json_value_module.mod"
+    # "${TOAST_MODULE_DIR}/stdout_ansi_colours_m.mod"
+    # "${TOAST_MODULE_DIR}/stdout_writer_m.mod"
     "${TOAST_MODULE_DIR}/toast.mod"
-    "${TOAST_MODULE_DIR}/toast_util_m.mod"
+    # "${TOAST_MODULE_DIR}/toast_util_m.mod"
     DESTINATION finclude/toast
 )
 
