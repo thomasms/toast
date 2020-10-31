@@ -101,8 +101,8 @@ include_directories (${TOAST_MODULE_DIR} ${TOAST_INCLUDE_DIR})
 link_directories (${TOAST_BUILD_DIR}/lib)
 
 # external sources
-set (FORK_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/fork)
-set (JSON_FORTRAN_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/json-fortran/src)
+set(FORK_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/fork)
+set(JSON_FORTRAN_SOURCE_DIR ${TOAST_EXTERNAL_DIR}/json-fortran/src)
 
 # sources
 add_subdirectory(${TOAST_SOURCE_DIR})
@@ -116,8 +116,9 @@ add_subdirectory(${TOAST_TEST_DIR})
 ### Select what to install
 
 # Libraries
-# This may require CMake 3.14 or later
-install(TARGETS ${TOAST_LIB_NAME})
+# This may require CMake 3.14 or later; moved to ./toast/CMakeLists.txt
+# See https://stackoverflow.com/questions/34443128/cmake-install-targets-in-subdirectories
+# install(TARGETS ${TOAST_LIB_NAME})
 
 # Fortran module (.mod) files
 # This list may contain unnecessary files; is more than toast.mod needed?
