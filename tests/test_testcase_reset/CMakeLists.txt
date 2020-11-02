@@ -20,3 +20,4 @@ set_target_properties(${TOAST_TEST_NAME}
                       ARCHIVE_OUTPUT_DIRECTORY ${TOAST_BUILD_DIR}/lib
                       Fortran_MODULE_DIRECTORY ${TOAST_MODULE_DIR})
 
+add_test(NAME ${TOAST_TEST_NAME} COMMAND ${TOAST_TEST_NAME})

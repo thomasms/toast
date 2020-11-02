@@ -18,3 +18,9 @@ set_target_properties(${TOASTEXAMPLE_NAME}
                       ARCHIVE_OUTPUT_DIRECTORY ${TOAST_BUILD_DIR}/lib
                       Fortran_MODULE_DIRECTORY ${TOAST_MODULE_DIR})
 
+add_test(NAME ${TOASTEXAMPLE_NAME} COMMAND ${TOASTEXAMPLE_NAME})
+
+set_tests_properties(${TOASTEXAMPLE_NAME}
+    PROPERTIES
+    WILL_FAIL TRUE
+)
